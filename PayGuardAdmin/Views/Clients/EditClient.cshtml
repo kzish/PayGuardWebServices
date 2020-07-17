@@ -1,0 +1,113 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    var banks = (List<PayGuardAdmin.Models.MBank>)ViewBag.banks;
+    var client = (PayGuardAdmin.Models.MClient)ViewBag.client;
+    var asp_net_user = (PayGuardAdmin.Models.AspNetUsers)ViewBag.user;
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <form action="~/Clients/EditClient" method="post" style="width:80%;margin:auto;">
+
+                <h2>Edit Client</h2>
+                <input type="hidden" name="AspNetUserId" value="@client.AspNetUserId"/>
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="email" class="form-control" name="LoginEmail" value="@asp_net_user.Email" disabled>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>Login Email</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="LoginPassword" value="******" disabled>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>Login Password</small>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="ClientOrganizationName" value="@client.ClientOrganizationName" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>ClientOrganizationName</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="ContactPerson" value="@client.ContactPerson" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>ContactPerson</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="ContactMobile" value="@client.ContactMobile" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>ContactMobile</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="email" class="form-control" name="ContactEmail" value="@client.ContactEmail" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>ContactEmail</small>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <select class="form-control .chosen" name="EBankCode">
+                                @foreach (var bank in banks)
+                                {
+                                    <option value="@bank.Id" selected="@(bank.Id==client.EBankCode)">@bank.BankName</option>
+                                }
+                            </select>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>EBankCode</small>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="BankAccountName" value="@client.BankAccountName" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>BankAccountName</small>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="BankAccountNumber" value="@client.BankAccountNumber" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>BankAccountNumber</small>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="BankBranchCode" value="@client.BankBranchCode" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>BankBranchCode</small>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+
+
+        </div>
+    </div>
+</div>
+
