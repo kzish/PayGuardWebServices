@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PayGuardClient.Models;
@@ -16,6 +17,12 @@ namespace PayGuardClient.Controllers
     {
 
         private dbContext db = new dbContext();
+        private HostingEnvironment host;
+
+        public BulkPaymentsController(HostingEnvironment host)
+        {
+            this.host = host;
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -40,33 +47,35 @@ namespace PayGuardClient.Controllers
             return View();
         }
 
-        [HttpGet("CreateBulkPayment")]
-        public IActionResult CreateBulkPayment()
+        [HttpGet("CreateBulkPayments")]
+        public IActionResult CreateBulkPayments()
         {
             ViewBag.title = "Create BulkPayment";
             return View();
         }
 
 
-        [HttpPost("CreateBulkPayment")]
-        public async Task<IActionResult> CreateBulkPayment(string reference, IFormFile file)
+        [HttpPost("CreateBulkPayments")]
+        public async Task<IActionResult> CreateBulkPayments(string reference, IFormFile file)
         {
             try
             {
-
+                ViewBag.title = "Create BulkPayment";
                 //temp file
                 string bulk_payment_data = string.Empty;
-                var filePath = Path.GetTempFileName();
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                var file_name = Guid.NewGuid().ToString();
+                var file_path = host.WebRootPath + "/Uploads/" + file_name + ".csv";
+                using (var stream = new FileStream(file_path, FileMode.CreateNew))
                 {
                     await file.CopyToAsync(stream);
-                    bulk_payment_data = System.IO.File.ReadAllText(filePath);
+                    stream.Dispose();
                 }
                 //read uploaded data
+                bulk_payment_data = System.IO.File.ReadAllText(file_path);
+                //delete the file
+                System.IO.File.Delete(file_path);
 
-
-               
-                TempData["msg"] = "Saved";
+                TempData["msg"] = bulk_payment_data;
                 TempData["type"] = "success";
             }
             catch (Exception ex)
