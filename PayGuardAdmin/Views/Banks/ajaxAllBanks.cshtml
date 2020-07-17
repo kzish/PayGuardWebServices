@@ -24,26 +24,29 @@
             <th>BankName</th>
             <th>SwiftCode</th>
             <th>EndPoint</th>
+            <th>Online</th>
             <th>Action</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in banks)
         {
-            <tr>
-                <td title="@item.BankName">@item.BankName</td>
-                <td title="@item.SwiftCode">@item.SwiftCode</td>
-                <td title="@item.EndPoint">@item.EndPoint</td>
-                <td>
-                    <a href="javascript:void(0);" style="color:red;" onclick="confirm_delete('@item.Id')">
-                        Delete
-                    </a>
-                    |
-                    <a href="~/Banks/EditBank/@item.Id" style="color:blue;">
-                        Open
-                    </a>
-                </td>
-            </tr>
+        <tr>
+            <td title="@item.BankName">@item.BankName</td>
+            <td title="@item.SwiftCode">@item.SwiftCode</td>
+            <td title="@item.EndPoint">@item.EndPoint</td>
+            <td title="@item.Online.ToString()">@item.Online.ToString()</td>
+
+            <td>
+                <a href="javascript:void(0);" style="color:red;" onclick="confirm_delete('@item.Id')">
+                    Delete
+                </a>
+                |
+                <a href="~/Banks/EditBank/@item.Id" style="color:blue;">
+                    Open
+                </a>
+            </td>
+        </tr>
         }
     </tbody>
 </table>

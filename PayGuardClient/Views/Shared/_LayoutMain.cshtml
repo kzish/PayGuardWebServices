@@ -80,52 +80,30 @@
                 </li>
 
 
-                <li class="@(ViewBag.title=="Banks"?"active":"")">
-                    <a href="~/Banks">Banks</a>
+                <li class="@(ViewBag.title=="Bulk Payments"?"active":"")">
+                    <a href="~/BulkPayments">Bulk Payments</a>
                 </li>
 
 
-                <li class="@(ViewBag.title=="Clients"?"active":"")">
-                    <a href="~/Clients">Clients</a>
+                <li class="@(ViewBag.title=="Debit Orders"?"active":"")">
+                    <a href="~/DebitOrders">Debit Orders</a>
                 </li>
 
 
-                @*<li @(ViewBag.title.Contains("Roles") ? "active" : "")>
-                    <a href="#roles"
+                <li @(ViewBag.title.Contains("Account") ? "active" : "")>
+                    <a href="#account"
                        data-toggle="collapse"
                        aria-expanded="false"
-                       class="dropdown-toggle">Roles</a>
-                    <ul class="collapse list-unstyled" id="roles">
+                       class="dropdown-toggle">Account</a>
+                    <ul class="collapse list-unstyled" id="account">
                         <li>
-                            <a href="/Roles/All">All Roles</a>
+                            <a href="~/Account/ChnagePassword">Change Password</a>
                         </li>
                         <li>
-                            <a href="/Roles/CreateNewRole">Create New Role</a>
+                            <a href="/Account/BankingDetails">Banking Details</a>
                         </li>
                     </ul>
                 </li>
-
-                <li @(ViewBag.title.Contains("Settings") ? "active" : "")>
-                    <a href="#settings"
-                       data-toggle="collapse"
-                       aria-expanded="false"
-                       class="dropdown-toggle">Settings</a>
-                    <ul class="collapse list-unstyled" id="settings">
-                        <li>
-                            <a href="/Settings/Logos">AR Logos</a>
-                        </li>
-                        <li>
-                            <a href="/Settings/ArVideo">Ar video</a>
-                        </li>
-                        <li>
-                            <a href="/Settings/CompanyLogo">Company Icon</a>
-                        </li>
-                        <li>
-                            <a href="/Settings/CompanyName">Company Name</a>
-                        </li>
-                    </ul>
-                </li>
-
 
 
                 @*

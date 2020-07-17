@@ -40,7 +40,7 @@ C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\o
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Banks\ajaxAllBanks.cshtml.g.cs
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Banks\CreateBank.cshtml.g.cs
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Banks\EditBank.cshtml.g.cs
-C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Clients\ajaxAllClients.cshtml.g.cs
-C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Clients\AllClients.cshtml.g.cs
-C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Clients\CreateClient.cshtml.g.cs
-C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Clients\EditClient.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Companies\ajaxAllCompanies.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Companies\AllCompanies.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Companies\CreateCompany.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Companies\EditCompany.cshtml.g.cs

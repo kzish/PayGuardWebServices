@@ -1,0 +1,88 @@
+﻿@{
+    var bulk_payments = (List<PayGuardClient.Models.MBulkPayments>)ViewBag.bulk_payments;
+}
+<style>
+    @*style the drop down select entries - datatables*@
+    .custom-select
+    {
+        height:30px!important;
+        width:50px!important;
+        margin-left:5px!important;
+    }
+    @*style the copy buttons- datatables*@
+    .dt-buttons
+    {
+        margin-left:4px!important;
+    }
+</style>
+
+
+
+<table id="dt" class="table tblsm">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Reference</th>
+            <th>Last Submitted</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in bulk_payments)
+        {
+        <tr>
+            <td title="@item.Date.ToString("d MMM yyyy")">@item.Date.ToString("d MMM yyyy")</td>
+            <td title="@item.Reference">@item.Reference</td>
+            <td title="@item.DateLastSubmitted?.ToString("d MMM yyyy")">@item.DateLastSubmitted?.ToString("d MMM yyyy")</td>
+            <td>
+                <a href="javascript:void(0);" style="color:red;" onclick="confirm_delete('@item.Id')">
+                    Submit
+                </a>
+                |
+                <a href="~/Banks/EditBank/@item.Id" style="color:blue;">
+                    Open
+                </a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<form action="~/Banks/DeleteBank" method="post" id="delete_form">
+    <input type="hidden" value="" name="id" id="delete_id"/>
+</form>
+
+<script>
+
+    $('#dt').DataTable({
+        select: true,
+        responsive: true,
+        dom: 'lBfrtip',
+        buttons: [
+            'copyHtml5',
+            'excelHtml5',
+            'csvHtml5',
+            'pdfHtml5'
+        ]
+    });
+
+
+    function confirm_delete(id) {
+        $.confirm({
+            title: 'Information',
+            type: "red",
+            content: 'Delete this Record?',
+            buttons: {
+                Yes: function () {
+                    $("#delete_id").val(id);
+                    $("#delete_form").submit();
+                },
+                No: function () {
+                },
+
+            }
+        });
+
+    }
+
+</script>

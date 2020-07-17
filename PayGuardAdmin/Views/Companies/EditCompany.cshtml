@@ -1,0 +1,95 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    var banks = (List<PayGuardAdmin.Models.MBank>)ViewBag.banks;
+    var company = (PayGuardAdmin.Models.MCompany)ViewBag.company;
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <form action="~/Companies/EditCompany" method="post" style="width:80%;margin:auto;">
+
+                <h2>Edit Company</h2>
+                <input type="hidden" name="Id" value="@company.Id" />
+
+                <div class="row">
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="CompanyName" value="@company.CompanyName" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>CompanyName</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="ContactPerson" value="@company.ContactPerson" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>ContactPerson</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="ContactMobile" value="@company.ContactMobile" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>ContactMobile</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="email" class="form-control" name="ContactEmail" value="@company.ContactEmail" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>ContactEmail</small>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <select class="form-control .chosen" name="EBankCode">
+                                @foreach (var bank in banks)
+                                {
+                                    <option value="@bank.Id" selected="@(bank.Id==company.EBankCode)">@bank.BankName</option>
+                                }
+                            </select>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>Bank</small>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="BankAccountName" value="@company.BankAccountName" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>BankAccountName</small>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="BankAccountNumber" value="@company.BankAccountNumber" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>BankAccountNumber</small>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="BankBranchCode" value="@company.BankBranchCode" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>BankBranchCode</small>
+                        </div>
+                    </div>
+
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save</button>
+            </form>
+
+
+        </div>
+    </div>
+</div>
+

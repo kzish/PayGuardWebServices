@@ -23,7 +23,10 @@ namespace PayGuardAdmin.Models
         public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
         public virtual DbSet<MBank> MBank { get; set; }
-        public virtual DbSet<MClient> MClient { get; set; }
+        public virtual DbSet<MBulkPayments> MBulkPayments { get; set; }
+        public virtual DbSet<MBulkPaymentsRecipients> MBulkPaymentsRecipients { get; set; }
+        public virtual DbSet<MCompany> MCompany { get; set; }
+        public virtual DbSet<MUsers> MUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -157,8 +160,11 @@ namespace PayGuardAdmin.Models
                     .IsUnicode(false);
 
                 entity.Property(e => e.EndPoint)
+                    .IsRequired()
                     .HasColumnName("end_point")
                     .HasColumnType("text");
+
+                entity.Property(e => e.Online).HasColumnName("online");
 
                 entity.Property(e => e.SwiftCode)
                     .IsRequired()
@@ -167,34 +173,104 @@ namespace PayGuardAdmin.Models
                     .IsUnicode(false);
             });
 
-            modelBuilder.Entity<MClient>(entity =>
+            modelBuilder.Entity<MBulkPayments>(entity =>
             {
-                entity.HasKey(e => e.AspNetUserId);
+                entity.ToTable("m_bulk_payments");
 
-                entity.ToTable("m_client");
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.AspNetUserId)
+                    .IsRequired()
                     .HasColumnName("asp_net_user_id")
-                    .ValueGeneratedNever();
+                    .HasMaxLength(450);
+
+                entity.Property(e => e.CompanyId).HasColumnName("company_id");
+
+                entity.Property(e => e.Date)
+                    .HasColumnName("date")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.Reference)
+                    .IsRequired()
+                    .HasColumnName("reference")
+                    .HasColumnType("text");
+
+                entity.HasOne(d => d.AspNetUser)
+                    .WithMany(p => p.MBulkPayments)
+                    .HasForeignKey(d => d.AspNetUserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_m_bulk_payments_AspNetUsers");
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.MBulkPayments)
+                    .HasForeignKey(d => d.CompanyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_m_bulk_payments_m_company");
+            });
+
+            modelBuilder.Entity<MBulkPaymentsRecipients>(entity =>
+            {
+                entity.ToTable("m_bulk_payments_recipients");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.BulkPaymentId).HasColumnName("bulk_payment_id");
+
+                entity.Property(e => e.ERecipientBankId).HasColumnName("e_recipient_bank_id");
+
+                entity.Property(e => e.RecipientAccountNumber)
+                    .IsRequired()
+                    .HasColumnName("recipient_account_number")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.RecipientAmount)
+                    .HasColumnName("recipient_amount")
+                    .HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.RecipientName)
+                    .IsRequired()
+                    .HasColumnName("recipient_name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.ERecipientBank)
+                    .WithMany(p => p.MBulkPaymentsRecipients)
+                    .HasForeignKey(d => d.ERecipientBankId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_m_bulk_payments_recipients_m_bank");
+            });
+
+            modelBuilder.Entity<MCompany>(entity =>
+            {
+                entity.ToTable("m_company");
+
+                entity.HasIndex(e => e.CompanyName)
+                    .HasName("unique_organization_name")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.BankAccountName)
+                    .IsRequired()
                     .HasColumnName("bank_account_name")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
                 entity.Property(e => e.BankAccountNumber)
+                    .IsRequired()
                     .HasColumnName("bank_account_number")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
                 entity.Property(e => e.BankBranchCode)
+                    .IsRequired()
                     .HasColumnName("bank_branch_code")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
-                entity.Property(e => e.ClientOrganizationName)
+                entity.Property(e => e.CompanyName)
                     .IsRequired()
-                    .HasColumnName("client_organization_name")
+                    .HasColumnName("company_name")
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
@@ -219,10 +295,45 @@ namespace PayGuardAdmin.Models
                 entity.Property(e => e.EBankCode).HasColumnName("e_bank_code");
 
                 entity.HasOne(d => d.EBankCodeNavigation)
-                    .WithMany(p => p.MClient)
+                    .WithMany(p => p.MCompany)
                     .HasForeignKey(d => d.EBankCode)
-                    .OnDelete(DeleteBehavior.Cascade)
-                    .HasConstraintName("FK_m_client_m_bank");
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_m_company_m_bank");
+            });
+
+            modelBuilder.Entity<MUsers>(entity =>
+            {
+                entity.HasKey(e => e.AspNetUserId);
+
+                entity.ToTable("m_users");
+
+                entity.Property(e => e.AspNetUserId)
+                    .HasColumnName("asp_net_user_id")
+                    .ValueGeneratedNever();
+
+                entity.Property(e => e.CompanyId).HasColumnName("company_id");
+
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasColumnName("name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Surname)
+                    .IsRequired()
+                    .HasColumnName("surname")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.HasOne(d => d.AspNetUser)
+                    .WithOne(p => p.MUsers)
+                    .HasForeignKey<MUsers>(d => d.AspNetUserId)
+                    .HasConstraintName("FK_m_users_AspNetUsers");
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.MUsers)
+                    .HasForeignKey(d => d.CompanyId)
+                    .HasConstraintName("FK_m_users_m_company");
             });
         }
     }
