@@ -43,7 +43,9 @@ namespace PayGuardClient.Controllers
         public IActionResult ajaxAllBulkPayments()
         {
             ViewBag.title = "All BulkPayments";
-            var bulk_payments = db.MBulkPayments.ToList();
+            var bulk_payments = db.MBulkPayments
+                .Include(i => i.MBulkPaymentsRecipients)
+                .ToList();
             ViewBag.bulk_payments = bulk_payments;
             return View();
         }
@@ -214,48 +216,68 @@ namespace PayGuardClient.Controllers
                         db.MBulkPaymentsRecipients.RemoveRange(old_recipients);
                         await db.SaveChangesAsync();
                     }
-                    //
-                    string msg = "nothing";
                     //add newly uploaded recipients
-                    var bulk_payment_recipients = new List<MBulkPaymentsRecipients>();
                     int num_errors = 0;
+                    int valid_records = 0;
+                    bool invalid_bank_codes_exist = false;
+                    bool invalid_amounts_exist = false;
+                    //
+                    var valid_bank_ids = db.MBank.Select(i => i.Id).ToList();
+                    //
+                    int row_number = 0;
                     foreach (var line in bulk_payment_data)
                     {
                         try
                         {
-                            var bulk_payment_recipient = new MBulkPaymentsRecipients();
-                            bulk_payment_recipient.RecipientName = line.Split(',')[0];
+                            if (row_number == 0)
+                            {
+                                row_number++;
+                                continue;//skip first row because it is the headings
+                            }
+
+                            var RecipientName = line.Split(',')[0];
+                            var RecipientAccountNumber = line.Split(',')[2];
                             //
                             int ERecipientBankId = 0;
                             int.TryParse(line.Split(',')[1], out ERecipientBankId);
-                            bulk_payment_recipient.ERecipientBankId = ERecipientBankId;
-                            //
-                            bulk_payment_recipient.RecipientAccountNumber = line.Split(',')[2];
+                            if (!valid_bank_ids.Contains(ERecipientBankId))
+                            {
+                                num_errors++;
+                                invalid_bank_codes_exist = true;
+                                continue;//invalid bank id continue, skip record
+                            }
                             //
                             decimal RecipientAmount = decimal.Zero;
                             decimal.TryParse(line.Split(',')[3], out RecipientAmount);
+                            if (RecipientAmount <= decimal.Zero)
+                            {
+                                num_errors++;
+                                invalid_amounts_exist = true;
+                                continue;//skip this record invalid amount
+                            }
+
+                            var bulk_payment_recipient = new MBulkPaymentsRecipients();
+                            bulk_payment_recipient.RecipientName = RecipientName;
+                            bulk_payment_recipient.ERecipientBankId = ERecipientBankId;
+                            bulk_payment_recipient.RecipientAccountNumber = RecipientAccountNumber;
                             bulk_payment_recipient.RecipientAmount = RecipientAmount;
-                            //
                             bulk_payment_recipient.BulkPaymentId = Id;
-                            bulk_payment_recipients.Add(bulk_payment_recipient);
                             db.MBulkPaymentsRecipients.Add(bulk_payment_recipient);
-                            msg = "pasted";
+                            valid_records++;
                         }
                         catch (Exception ex)
                         {
                             num_errors++;
                         }
                     }
+                    ViewBag.errors = string.Empty;
+                    if (invalid_amounts_exist) ViewBag.errors += "Records with invalid amounts are skipped<br/>";
+                    if (invalid_bank_codes_exist) ViewBag.errors += "Records with invalid bank codes are skipped<br/>";
 
 
-                    TempData["msg"] = msg;
+                    TempData["msg"] = $"You have {num_errors} errors and {valid_records} records";
                     TempData["type"] = "warning";
-                    //TempData["msg"] = bulk_payment_data[0];
-                    //TempData["type"] = "warning";
-                    //TempData["msg"] = $"You have {num_errors} errors and {bulk_payment_data.Count()} records";
-                    //TempData["type"] = "warning";
                 }
-
 
                 //
                 var asp_net_user = db.AspNetUsers.Where(i => i.Email == User.Identity.Name).FirstOrDefault();
@@ -276,7 +298,7 @@ namespace PayGuardClient.Controllers
                 TempData["type"] = "error";
                 var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
                 db.MErrors.Add(error);
-                //db.SaveChanges();
+                db.SaveChanges();
             }
             return RedirectToAction("EditBulkPayments", "BulkPayments", new { id = Id });
 

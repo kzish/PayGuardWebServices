@@ -2,6 +2,10 @@
   "iisSettings": {
     "windowsAuthentication": true,
     "anonymousAuthentication": true,
+    "iis": {
+      "applicationUrl": "http://localhost/PayGuardClient",
+      "sslPort": 0
+    },
     "iisExpress": {
       "applicationUrl": "http://localhost:28121",
       "sslPort": 44330
@@ -14,11 +18,12 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "ancmHostingModel": "OutOfProcess",
+      "sqlDebugging": true,
+      "ancmHostingModel": "InProcess",
       "nativeDebugging": true
     },
     "PayGuardClient": {
-      "commandName": "Executable",
+      "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

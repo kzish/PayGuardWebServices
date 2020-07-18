@@ -12,6 +12,7 @@ namespace PayGuardClient.Models
         public decimal RecipientAmount { get; set; }
         public int BulkPaymentId { get; set; }
 
+        public virtual MBulkPayments BulkPayment { get; set; }
         public virtual MBank ERecipientBank { get; set; }
     }
 }

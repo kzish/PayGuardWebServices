@@ -24,6 +24,7 @@
             <th>Date</th>
             <th>Reference</th>
             <th>Last Submitted</th>
+            <th>Records</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -34,6 +35,7 @@
             <td title="@item.Date.ToString("d MMM yyyy")">@item.Date.ToString("d MMM yyyy")</td>
             <td title="@item.Reference">@item.Reference</td>
             <td title="@item.DateLastSubmitted?.ToString("d MMM yyyy")">@item.DateLastSubmitted?.ToString("d MMM yyyy")</td>
+            <td title="@item.MBulkPaymentsRecipients.Count">(@item.MBulkPaymentsRecipients.Count)</td>
             <td>
                 <a href="javascript:void(0);" style="color:red;" onclick="confirm_delete('@item.Id')">
                     Submit

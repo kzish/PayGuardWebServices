@@ -226,7 +226,8 @@ namespace PayGuardClient.Models
                 entity.Property(e => e.RecipientAccountNumber)
                     .IsRequired()
                     .HasColumnName("recipient_account_number")
-                    .HasMaxLength(10);
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.RecipientAmount)
                     .HasColumnName("recipient_amount")
@@ -237,6 +238,12 @@ namespace PayGuardClient.Models
                     .HasColumnName("recipient_name")
                     .HasMaxLength(50)
                     .IsUnicode(false);
+
+                entity.HasOne(d => d.BulkPayment)
+                    .WithMany(p => p.MBulkPaymentsRecipients)
+                    .HasForeignKey(d => d.BulkPaymentId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_m_bulk_payments_recipients_m_bulk_payments");
 
                 entity.HasOne(d => d.ERecipientBank)
                     .WithMany(p => p.MBulkPaymentsRecipients)
@@ -314,11 +321,11 @@ namespace PayGuardClient.Models
 
                 entity.Property(e => e.Data1)
                     .HasColumnName("data1")
-                    .HasColumnType("text");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Data2)
                     .HasColumnName("data2")
-                    .HasColumnType("text");
+                    .IsUnicode(false);
 
                 entity.Property(e => e.Date)
                     .HasColumnName("date")
