@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-md-12">
 
-            <form action="~/BulkPayments/CreateBulkPayments" enctype="multipart/form-data"  method="post" style="width:80%;margin:auto;">
+            <form action="~/BulkPayments/CreateBulkPayments" enctype="multipart/form-data" method="post" style="width:80%;margin:auto;">
                 <h2>Create BulkPayment</h2>
 
                 <div class="form-group">
@@ -21,12 +21,69 @@
                 <button type="submit" class="btn btn-primary">Upload</button>
                 <small class="form-text text-muted"><span style="color:red;">1 - Download BulkPay File</span> <a href="~/Raw/BulkPay.csv" download="BulkPay.csv">BulkPay.csv</a></small>
                 <small class="form-text text-muted"><span style="color:red;">2 - Enter beneficiaries</span></small>
-                <small class="form-text text-muted"><span style="color:red;">3 - Upload the BulkPay file</span></small>
-                <small class="form-text text-muted"><span style="color:red;">4 - Add Reference for the Bulk Payment</span></small>
+                <small class="form-text text-muted"><span style="color:red;">3 - Upload BulkPay file</span></small>
+
+                <br />
+                <br />
+                <br />
+                <a href="javascript:void(0);" onclick="OpenBanksModal(); return false;">Click here to show <b>Bank Codes</b></a>
             </form>
 
 
         </div>
     </div>
+
+
 </div>
+
+
+
+
+@* Modal *@
+<div class="modal fade" id="all_banks_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Bank Codes</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" id="data">
+
+                        <center id="loader">
+                            <img src="~/assets/img/_loading.gif" />
+                        </center>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $.ajax({
+        method:'get',
+        url: "@(Url.Content("~/BulkPayments/ajaxallBanks"))",
+        success: function (data) {
+            $("#loader").hide();
+            $("#data").html(data);
+        },
+        error: function () {
+            alert('Failed to load banks');
+            $("#loader").hide();
+        },
+    });
+</script>
+
+<script>
+    function OpenBanksModal() {
+        $("#all_banks_modal").modal("show");
+    }
+</script>
 

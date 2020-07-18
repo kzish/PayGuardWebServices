@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PayGuardClient.Models;
 
 namespace PayGuardClient.Controllers
@@ -54,6 +55,34 @@ namespace PayGuardClient.Controllers
             return View();
         }
 
+        /// <summary>
+        /// fetch all banks async and display to the client
+        /// </summary>
+        /// <returns></returns>
+
+        [HttpGet("ajaxAllBanks")]
+        public IActionResult ajaxAllBanks()
+        {
+            var banks = db.MBank.ToList();
+            ViewBag.banks = banks;
+            return View();
+        }
+
+        /// <summary>
+        /// fetch all ajaxAllBulkPaymentRecipients
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("ajaxAllBulkPaymentRecipients/{bulk_payment_id}")]
+        public IActionResult ajaxAllBulkPaymentRecipients(int bulk_payment_id)
+        {
+            var recipients = db.MBulkPaymentsRecipients
+                .Where(i=>i.BulkPaymentId==bulk_payment_id)
+                .Include(i=>i.ERecipientBank)
+                .ToList();
+            ViewBag.recipients = recipients;
+            return View();
+        }
+
 
         [HttpPost("CreateBulkPayments")]
         public async Task<IActionResult> CreateBulkPayments(string reference, IFormFile file)
@@ -62,7 +91,6 @@ namespace PayGuardClient.Controllers
             {
                 ViewBag.title = "Create BulkPayment";
                 //temp file
-                string bulk_payment_data = string.Empty;
                 var file_name = Guid.NewGuid().ToString();
                 var file_path = host.WebRootPath + "/Uploads/" + file_name + ".csv";
                 using (var stream = new FileStream(file_path, FileMode.CreateNew))
@@ -71,12 +99,57 @@ namespace PayGuardClient.Controllers
                     stream.Dispose();
                 }
                 //read uploaded data
-                bulk_payment_data = System.IO.File.ReadAllText(file_path);
+                var bulk_payment_data = System.IO.File.ReadAllLines(file_path);
                 //delete the file
                 System.IO.File.Delete(file_path);
+                //
+                var asp_net_user = db.AspNetUsers.Where(i => i.Email == User.Identity.Name).FirstOrDefault();
+                var system_user = db.MUsers.Where(i => i.AspNetUserId == asp_net_user.Id).FirstOrDefault();
+                var company = db.MCompany.Where(i => i.Id == system_user.CompanyId).FirstOrDefault();
+                //get session user
+                var user = db.AspNetUsers.Where(i => i.Email == User.Identity.Name).FirstOrDefault();
+                //create bulk payment header
+                var bulk_payment = new MBulkPayments();
+                bulk_payment.Date = DateTime.Now;
+                bulk_payment.Reference = reference;
+                bulk_payment.CompanyId = company.Id;
+                bulk_payment.AspNetUserId = asp_net_user.Id;
+                db.MBulkPayments.Add(bulk_payment);
+                await db.SaveChangesAsync();
+                //create bulk_payment recipients
+                var bulk_payment_recipients = new List<MBulkPaymentsRecipients>();
+                int num_errors = 0;
+                foreach (var line in bulk_payment_data)
+                {
+                    try
+                    {
+                        var bulk_payment_recipient = new MBulkPaymentsRecipients();
+                        bulk_payment_recipient.RecipientName = line.Split(',')[0];
+                        //
+                        int ERecipientBankId = 0;
+                        int.TryParse(line.Split(',')[1], out ERecipientBankId);
+                        bulk_payment_recipient.ERecipientBankId = ERecipientBankId;
+                        //
+                        bulk_payment_recipient.RecipientAccountNumber = line.Split(',')[2];
+                        //
+                        decimal RecipientAmount = decimal.Zero;
+                        decimal.TryParse(line.Split(',')[3], out RecipientAmount);
+                        bulk_payment_recipient.RecipientAmount = RecipientAmount;
+                        //
+                        bulk_payment_recipient.BulkPaymentId = bulk_payment.Id;
+                        bulk_payment_recipients.Add(bulk_payment_recipient);
+                    }catch(Exception ex)
+                    {
+                        num_errors++;
+                    }
+                }
+                //
+                db.MBulkPaymentsRecipients.AddRange(bulk_payment_recipients);
+                await db.SaveChangesAsync();
+                TempData["msg"] =$"You have {num_errors} errors and {bulk_payment_data.Count()} records";
+                TempData["type"] = "warning";
+                return RedirectToAction("EditBulkPayment","BulkPayments",new {id=bulk_payment.Id});
 
-                TempData["msg"] = bulk_payment_data;
-                TempData["type"] = "success";
             }
             catch (Exception ex)
             {
@@ -84,7 +157,6 @@ namespace PayGuardClient.Controllers
                 TempData["type"] = "error";
                 return View();
             }
-            return RedirectToAction("AllBulkPayments");
         }
 
 

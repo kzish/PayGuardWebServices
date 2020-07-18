@@ -40,3 +40,4 @@ C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\Razor\Views\BulkPayments\AllBulkPayments.cshtml.g.cs
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\Razor\Views\BulkPayments\EditBulkPayment.cshtml.g.cs
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\Razor\Views\BulkPayments\CreateBulkPayments.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\Razor\Views\BulkPayments\ajaxAllBanks.cshtml.g.cs

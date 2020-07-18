@@ -11,7 +11,12 @@
             <form action="~/Companies/CreateCompany" method="post" style="width:80%;margin:auto;">
 
                 <h2>Create Company</h2>
+                <br />
+                <br />
+                <br />
+                <br />
 
+                <h6>Company details</h6>
                 <div class="row">
 
                     <div class="col-md-3">
@@ -48,7 +53,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <select class="form-control .chosen" name="EBankCode">
-                                @foreach(var bank in banks)
+                                @foreach (var bank in banks)
                                 {
                                     <option value="@bank.Id">@bank.BankName</option>
                                 }
@@ -80,6 +85,45 @@
                             <small class="form-text text-muted"><span style="color:red;">*</span>BankBranchCode</small>
                         </div>
                     </div>
+
+                </div>
+
+                <br />
+                <br />
+                <br />
+                <br />
+                <h6>Default user</h6>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="email" name="LoginEmail" class="form-control" required />
+                            <small class="form-text text-muted"><span style="color:red;">*</span>Login Email</small>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="LoginPassword" value="Softrite#99" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>Login Password</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" name="Name" class="form-control" required/>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>Name</small>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="Surname" required>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>Surname</small>
+                        </div>
+                    </div>
+
 
                 </div>
 

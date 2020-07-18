@@ -1,0 +1,55 @@
+﻿@{
+    var recipients = (List<PayGuardClient.Models.MBulkPaymentsRecipients>)ViewBag.recipients;
+}
+<style>
+    @*style the drop down select entries - datatables*@
+    .custom-select
+    {
+        height:30px!important;
+        width:50px!important;
+        margin-left:5px!important;
+    }
+    @*style the copy buttons- datatables*@
+    .dt-buttons
+    {
+        margin-left:4px!important;
+    }
+</style>
+
+
+
+<table id="dt" class="table tblsm">
+    <thead>
+        <tr>
+            <th>Beneficiary Name</th>
+            <th>Bank</th>
+            <th>AccountNumber</th>
+            <th>Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in recipients)
+        {
+        <tr>
+            <td title="@item.RecipientName">@item.RecipientName</td>
+            <td title="@item.ERecipientBank.BankName">@item.ERecipientBank.BankName</td>
+            <td title="@item.RecipientAccountNumber">@item.RecipientAccountNumber</td>
+            <td title="@item.RecipientAmount">@item.RecipientAmount</td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#dt').DataTable({
+        select: true,
+        responsive: true,
+        dom: 'lBfrtip',
+        buttons: [
+            'copyHtml5',
+            'excelHtml5',
+            'csvHtml5',
+            'pdfHtml5'
+        ]
+    });
+</script>

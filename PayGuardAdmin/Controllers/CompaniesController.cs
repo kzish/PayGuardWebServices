@@ -48,7 +48,7 @@ namespace PayGuardAdmin.Controllers
         public IActionResult ajaxAllCompanies()
         {
             ViewBag.title = "All Companies";
-            var companies = db.MCompany.Include(i=>i.EBankCodeNavigation).ToList();
+            var companies = db.MCompany.Include(i => i.EBankCodeNavigation).ToList();
             ViewBag.companies = companies;
             return View();
         }
@@ -64,13 +64,45 @@ namespace PayGuardAdmin.Controllers
 
 
         [HttpPost("CreateCompany")]
-        public async Task<IActionResult> CreateCompany(MCompany company)
+        public async Task<IActionResult> CreateCompany(MCompany company, string LoginEmail, string LoginPassword, string Name, string Surname)
         {
             try
             {
+                //check company name exists already
+                var company_name_exists = db.MCompany.Where(i => i.CompanyName == company.CompanyName).Any();
+                if (company_name_exists)
+                {
+                    TempData["msg"] = $"{company.CompanyName} exists already";
+                    TempData["type"] = "error";
+                    return View();
+                }
+                //create identity user
+                var new_identity_user = new IdentityUser();
+                new_identity_user.Email = LoginEmail;
+                new_identity_user.UserName = new_identity_user.Email;
+                await userManager.CreateAsync(new_identity_user, LoginPassword);//create user
+                //create company role
+                bool x = await roleManager.RoleExistsAsync("company");
+                if (!x)
+                {
+                    var role = new IdentityRole("company");
+                    await roleManager.CreateAsync(role);
+                }
+                //add user to company role
+                await userManager.AddToRoleAsync(new_identity_user, "company");
                 //create company
                 db.MCompany.Add(company);
                 await db.SaveChangesAsync();
+                //create system user and link to identity user
+                var new_system_user = new MUsers();
+                new_system_user.AspNetUserId = new_identity_user.Id;
+                new_system_user.Name = Name;
+                new_system_user.Surname = Surname;
+                new_system_user.CompanyId = company.Id;
+                //save new system user
+                db.MUsers.Add(new_system_user);
+                await db.SaveChangesAsync();
+                //
                 TempData["msg"] = "Saved";
                 TempData["type"] = "success";
             }
@@ -96,6 +128,15 @@ namespace PayGuardAdmin.Controllers
                 var banks = db.MBank.ToList();
                 ViewBag.company = company;
                 ViewBag.banks = banks;
+
+
+                var system_user = db.MUsers.Where(i => i.CompanyId == id).FirstOrDefault();
+                var asp_net_user = db.AspNetUsers.Find(system_user.AspNetUserId);
+
+
+                ViewBag.asp_net_user = asp_net_user;
+                ViewBag.system_user = system_user;
+
             }
             catch (Exception ex)
             {

@@ -1,0 +1,51 @@
+﻿@{
+    var banks = (List<PayGuardClient.Models.MBank>)ViewBag.banks;
+}
+<style>
+    @*style the drop down select entries - datatables*@
+    .custom-select
+    {
+        height:30px!important;
+        width:50px!important;
+        margin-left:5px!important;
+    }
+    @*style the copy buttons- datatables*@
+    .dt-buttons
+    {
+        margin-left:4px!important;
+    }
+</style>
+
+
+
+<table id="dt" class="table tblsm">
+    <thead>
+        <tr>
+            <th>BankName</th>
+            <th>ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in banks)
+        {
+        <tr>
+            <td title="@item.BankName">@item.BankName</td>
+            <td title="@item.Id">@item.Id</td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $('#dt').DataTable({
+        select: true,
+        responsive: true,
+        dom: 'lBfrtip',
+        buttons: [
+            'copyHtml5',
+            'excelHtml5',
+            'csvHtml5',
+            'pdfHtml5'
+        ]
+    });
+</script>

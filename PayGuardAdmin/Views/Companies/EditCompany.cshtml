@@ -2,6 +2,8 @@
     Layout = "~/Views/Shared/_LayoutMain.cshtml";
     var banks = (List<PayGuardAdmin.Models.MBank>)ViewBag.banks;
     var company = (PayGuardAdmin.Models.MCompany)ViewBag.company;
+    var asp_net_user = (PayGuardAdmin.Models.AspNetUsers)ViewBag.asp_net_user;
+    var system_user = (PayGuardAdmin.Models.MUsers)ViewBag.system_user;
 }
 
 
@@ -14,6 +16,12 @@
                 <h2>Edit Company</h2>
                 <input type="hidden" name="Id" value="@company.Id" />
 
+                <br />
+                <br />
+                <br />
+                <br />
+
+                <h6>Company details</h6>
                 <div class="row">
 
                     <div class="col-md-3">
@@ -82,6 +90,45 @@
                             <small class="form-text text-muted"><span style="color:red;">*</span>BankBranchCode</small>
                         </div>
                     </div>
+
+                </div>
+
+                <br />
+                <br />
+                <br />
+                <br />
+                <h6>Default user</h6>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="email" name="LoginEmail" class="form-control" required value="@asp_net_user.Email" disabled/>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>Login Email</small>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="LoginPassword" value="*********" required disabled>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>Login Password</small>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" name="Name" class="form-control" required value="@system_user.Name" disabled/>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>Name</small>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="Surname" required value="@system_user.Surname"disabled>
+                            <small class="form-text text-muted"><span style="color:red;">*</span>Surname</small>
+                        </div>
+                    </div>
+
 
                 </div>
 
