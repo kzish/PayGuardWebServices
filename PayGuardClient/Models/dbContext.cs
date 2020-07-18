@@ -26,6 +26,7 @@ namespace PayGuardClient.Models
         public virtual DbSet<MBulkPayments> MBulkPayments { get; set; }
         public virtual DbSet<MBulkPaymentsRecipients> MBulkPaymentsRecipients { get; set; }
         public virtual DbSet<MCompany> MCompany { get; set; }
+        public virtual DbSet<MErrors> MErrors { get; set; }
         public virtual DbSet<MUsers> MUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -303,6 +304,25 @@ namespace PayGuardClient.Models
                     .HasForeignKey(d => d.EBankCode)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_m_company_m_bank");
+            });
+
+            modelBuilder.Entity<MErrors>(entity =>
+            {
+                entity.ToTable("m_errors");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Data1)
+                    .HasColumnName("data1")
+                    .HasColumnType("text");
+
+                entity.Property(e => e.Data2)
+                    .HasColumnName("data2")
+                    .HasColumnType("text");
+
+                entity.Property(e => e.Date)
+                    .HasColumnName("date")
+                    .HasColumnType("datetime");
             });
 
             modelBuilder.Entity<MUsers>(entity =>

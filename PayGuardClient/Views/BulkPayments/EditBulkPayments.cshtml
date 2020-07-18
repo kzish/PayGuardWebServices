@@ -16,8 +16,8 @@
                     <small class="form-text text-muted"><span style="color:red;">*</span>Reference</small>
                 </div>
                 <div class="form-group">
-                    <input type="file" class="form-control" name="file" required accept=".csv">
-                    <small class="form-text text-muted"><span style="color:red;">*</span>Bulk File</small>
+                    <input type="file" class="form-control" name="file" accept=".csv" />
+                    <small class="form-text text-muted">Bulk File <span style="color:red;">Uploading a file will overwrite existing records</span></small>
                 </div>
                 <button type="submit" class="btn btn-primary">Upload</button>
                 <small class="form-text text-muted"><span style="color:red;">1 - Download BulkPay File</span> <a href="~/Raw/BulkPay.csv" download="BulkPay.csv">BulkPay.csv</a></small>
@@ -28,6 +28,8 @@
                 <br />
                 <br />
                 <a href="javascript:void(0);" onclick="OpenBanksModal(); return false;">Click here to show <b>Bank Codes</b></a>
+                <br />
+                <br />
             </form>
 
 
@@ -37,10 +39,14 @@
 
 
     <div class="row">
-        <div class="col-md-12" id="data_recipient">
-            <center id="loader_recipient">
-                <img src="~/assets/img/_loading.gif" />
-            </center>
+        <div class="col-md-12">
+
+            <div style="width:80%;margin:auto;" id="recipients">
+                <center id="loader_recipient">
+                    <img src="~/assets/img/_loading.gif" />
+                </center>
+            </div>
+           
         </div>
     </div>
 

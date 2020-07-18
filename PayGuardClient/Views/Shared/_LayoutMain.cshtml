@@ -87,8 +87,12 @@
                     <a href="~/Home/Dashboard">Dashboard</a>
                 </li>
 
+                <li class="@(ViewBag.title=="Bulk Payments"?"active":"")">
+                    <a href="~/BulkPayments">Bulk Payments</a>
+                </li>
 
-                <li @(ViewBag.title.Contains("Bulk") ? "active" : "")>
+
+                @*<li @(ViewBag.title.Contains("Bulk") ? "active" : "")>
                     <a href="#bulk_payments"
                        data-toggle="collapse"
                        aria-expanded="false"
@@ -105,7 +109,7 @@
                         </li>
                     </ul>
                 </li>
-
+                    *@
 
                 <li class="@(ViewBag.title=="Debit Orders"?"active":"")">
                     <a href="~/DebitOrders">Debit Orders</a>
@@ -129,98 +133,98 @@
 
 
                 @*
-                            <li @(ViewBag.title.Contains("Account") ? "active" : "")>
-                                <a href="#account"
-                                   data-toggle="collapse"
-                                   aria-expanded="false"
-                                   class="dropdown-toggle">My Account</a>
-                                <ul class="collapse list-unstyled" id="account">
-                                    <li>
-                                        <a href="/Account/ChangePassword">Change Password</a>
-                                    </li>
-                                    <li>
-                                        <a href="/Account/AccountDetails">Account Details</a>
-                                    </li>
-                                </ul>
-                            </li>
+                <li @(ViewBag.title.Contains("Account") ? "active" : "")>
+                    <a href="#account"
+                       data-toggle="collapse"
+                       aria-expanded="false"
+                       class="dropdown-toggle">My Account</a>
+                    <ul class="collapse list-unstyled" id="account">
+                        <li>
+                            <a href="/Account/ChangePassword">Change Password</a>
+                        </li>
+                        <li>
+                            <a href="/Account/AccountDetails">Account Details</a>
+                        </li>
+                    </ul>
+                </li>
 
 
-                            <li @(ViewBag.title.Contains("Bill") ? "active" : "")>
-                                <a href="#bill"
-                                   data-toggle="collapse"
-                                   aria-expanded="false"
-                                   class="dropdown-toggle">Billing</a>
-                                <ul class="collapse list-unstyled" id="bill">
-                                    <li>
-                                        <a href="/Billing/UploadPayment">Upload Payment</a>
-                                    </li>
-                                    <li>
-                                        <a href="/Billing/PaymentHistory">Payment History</a>
-                                    </li>
-                                </ul>
-                            </li>
-
-
-
+                <li @(ViewBag.title.Contains("Bill") ? "active" : "")>
+                    <a href="#bill"
+                       data-toggle="collapse"
+                       aria-expanded="false"
+                       class="dropdown-toggle">Billing</a>
+                    <ul class="collapse list-unstyled" id="bill">
+                        <li>
+                            <a href="/Billing/UploadPayment">Upload Payment</a>
+                        </li>
+                        <li>
+                            <a href="/Billing/PaymentHistory">Payment History</a>
+                        </li>
+                    </ul>
+                </li>
 
 
 
-                            <li @(ViewBag.title.Contains("Asset") ? "active" : "")>
-                                <a href="#Reports"
-                                   data-toggle="collapse"
-                                   aria-expanded="false"
-                                   class="dropdown-toggle">My Assets</a>
-                                <ul class="collapse list-unstyled" id="Reports">
-                                    <li>
-                                        <a href="/Assets/CreateAsset">New Asset</a>
-                                    </li>
-                                    <li>
-                                        <a href="/Assets/ListAllMyAssets">All</a>
-                                    </li>
-                                </ul>
-                            </li>
-
-
-                            <li @(ViewBag.title.Contains("Notification") ? "active" : "")>
-                                <a href="#notifications"
-                                   data-toggle="collapse"
-                                   aria-expanded="false"
-                                   class="dropdown-toggle">
-                                    Notifications
-                                    <span class="badge badge-pill badge-danger">
-                                        @ViewBag.num_notifications
-                                    </span>
-                                </a>
-                                <ul class="collapse list-unstyled" id="notifications">
-                                    <li>
-                                        <a href="/Notifications/AllNotifications">
-                                            All Notifications
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="/Notifications/Read">Read</a>
-                                    </li>
-
-                                    <li>
-                                        <a href="/Notifications/UnRead">UnRead</a>
-                                    </li>
-
-                                </ul>
-                            </li>
-
-
-                            @*
-                    <li class="@(ViewBag.title=="Settings"?"active":"")">
-                        <a href="/Home/Settings">Settings</a>
-                    </li>
 
 
 
-                            <li class="@(ViewBag.title=="About"?"active":"")">
-                                <a href="/Home/About">About</a>
-                            </li>
+                <li @(ViewBag.title.Contains("Asset") ? "active" : "")>
+                    <a href="#Reports"
+                       data-toggle="collapse"
+                       aria-expanded="false"
+                       class="dropdown-toggle">My Assets</a>
+                    <ul class="collapse list-unstyled" id="Reports">
+                        <li>
+                            <a href="/Assets/CreateAsset">New Asset</a>
+                        </li>
+                        <li>
+                            <a href="/Assets/ListAllMyAssets">All</a>
+                        </li>
+                    </ul>
+                </li>
 
-                        </ul>
+
+                <li @(ViewBag.title.Contains("Notification") ? "active" : "")>
+                    <a href="#notifications"
+                       data-toggle="collapse"
+                       aria-expanded="false"
+                       class="dropdown-toggle">
+                        Notifications
+                        <span class="badge badge-pill badge-danger">
+                            @ViewBag.num_notifications
+                        </span>
+                    </a>
+                    <ul class="collapse list-unstyled" id="notifications">
+                        <li>
+                            <a href="/Notifications/AllNotifications">
+                                All Notifications
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/Notifications/Read">Read</a>
+                        </li>
+
+                        <li>
+                            <a href="/Notifications/UnRead">UnRead</a>
+                        </li>
+
+                    </ul>
+                </li>
+
+
+                @*
+        <li class="@(ViewBag.title=="Settings"?"active":"")">
+            <a href="/Home/Settings">Settings</a>
+        </li>
+
+
+
+                <li class="@(ViewBag.title=="About"?"active":"")">
+                    <a href="/Home/About">About</a>
+                </li>
+
+            </ul>
                 *@
 
             </ul>

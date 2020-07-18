@@ -76,8 +76,8 @@ namespace PayGuardClient.Controllers
         public IActionResult ajaxAllBulkPaymentRecipients(int bulk_payment_id)
         {
             var recipients = db.MBulkPaymentsRecipients
-                .Where(i=>i.BulkPaymentId==bulk_payment_id)
-                .Include(i=>i.ERecipientBank)
+                .Where(i => i.BulkPaymentId == bulk_payment_id)
+                .Include(i => i.ERecipientBank)
                 .ToList();
             ViewBag.recipients = recipients;
             return View();
@@ -138,7 +138,8 @@ namespace PayGuardClient.Controllers
                         //
                         bulk_payment_recipient.BulkPaymentId = bulk_payment.Id;
                         bulk_payment_recipients.Add(bulk_payment_recipient);
-                    }catch(Exception ex)
+                    }
+                    catch (Exception ex)
                     {
                         num_errors++;
                     }
@@ -146,23 +147,26 @@ namespace PayGuardClient.Controllers
                 //
                 db.MBulkPaymentsRecipients.AddRange(bulk_payment_recipients);
                 await db.SaveChangesAsync();
-                TempData["msg"] =$"You have {num_errors} errors and {bulk_payment_data.Count()} records";
+                TempData["msg"] = $"You have {num_errors} errors and {bulk_payment_data.Count()} records";
                 TempData["type"] = "warning";
-                return RedirectToAction("EditBulkPayment","BulkPayments",new {id=bulk_payment.Id});
+                return RedirectToAction("EditBulkPayment", "BulkPayments", new { id = bulk_payment.Id });
 
             }
             catch (Exception ex)
             {
                 TempData["msg"] = ex.Message;
                 TempData["type"] = "error";
+                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
+                db.MErrors.Add(error);
+                db.SaveChanges();
                 return View();
             }
         }
 
 
 
-        [HttpGet("EditBulkPayment/{id}")]
-        public IActionResult EditBulkPayment(int id)
+        [HttpGet("EditBulkPayments/{id}")]
+        public IActionResult EditBulkPayments(int id)
         {
             try
             {
@@ -180,31 +184,107 @@ namespace PayGuardClient.Controllers
             return View();
         }
 
-        [HttpPost("EditBulkPayment")]
-        public async Task<IActionResult> EditBulkPayment(MBulkPayments BulkPayment)
+
+        [HttpPost("EditBulkPayments")]
+        public async Task<IActionResult> EditBulkPayments(int Id, string reference, IFormFile file)
         {
             try
             {
-                ViewBag.title = "Edit BulkPayment";
-                db.Entry(BulkPayment).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                ViewBag.title = "Edit BulkPayments";
+                //
+                if (file != null)
+                {
+                    //temp file
+                    var file_name = Guid.NewGuid().ToString();
+                    var file_path = host.WebRootPath + "/Uploads/" + file_name + ".csv";
+                    using (var stream = new FileStream(file_path, FileMode.CreateNew))
+                    {
+                        await file.CopyToAsync(stream);
+                        stream.Dispose();
+                    }
+                    //read uploaded data
+                    var bulk_payment_data = System.IO.File.ReadAllLines(file_path);
+                    //delete the file
+                    System.IO.File.Delete(file_path);
+
+                    //remove all previous recipients
+                    var old_recipients = db.MBulkPaymentsRecipients.Where(i => i.BulkPaymentId == Id).ToList();
+                    if (old_recipients.Count > 0)
+                    {
+                        db.MBulkPaymentsRecipients.RemoveRange(old_recipients);
+                        await db.SaveChangesAsync();
+                    }
+                    //
+                    string msg = "nothing";
+                    //add newly uploaded recipients
+                    var bulk_payment_recipients = new List<MBulkPaymentsRecipients>();
+                    int num_errors = 0;
+                    foreach (var line in bulk_payment_data)
+                    {
+                        try
+                        {
+                            var bulk_payment_recipient = new MBulkPaymentsRecipients();
+                            bulk_payment_recipient.RecipientName = line.Split(',')[0];
+                            //
+                            int ERecipientBankId = 0;
+                            int.TryParse(line.Split(',')[1], out ERecipientBankId);
+                            bulk_payment_recipient.ERecipientBankId = ERecipientBankId;
+                            //
+                            bulk_payment_recipient.RecipientAccountNumber = line.Split(',')[2];
+                            //
+                            decimal RecipientAmount = decimal.Zero;
+                            decimal.TryParse(line.Split(',')[3], out RecipientAmount);
+                            bulk_payment_recipient.RecipientAmount = RecipientAmount;
+                            //
+                            bulk_payment_recipient.BulkPaymentId = Id;
+                            bulk_payment_recipients.Add(bulk_payment_recipient);
+                            db.MBulkPaymentsRecipients.Add(bulk_payment_recipient);
+                            msg = "pasted";
+                        }
+                        catch (Exception ex)
+                        {
+                            num_errors++;
+                        }
+                    }
+
+
+                    TempData["msg"] = msg;
+                    TempData["type"] = "warning";
+                    //TempData["msg"] = bulk_payment_data[0];
+                    //TempData["type"] = "warning";
+                    //TempData["msg"] = $"You have {num_errors} errors and {bulk_payment_data.Count()} records";
+                    //TempData["type"] = "warning";
+                }
+
+
+                //
+                var asp_net_user = db.AspNetUsers.Where(i => i.Email == User.Identity.Name).FirstOrDefault();
+                var system_user = db.MUsers.Where(i => i.AspNetUserId == asp_net_user.Id).FirstOrDefault();
+                var company = db.MCompany.Where(i => i.Id == system_user.CompanyId).FirstOrDefault();
+                //get session user
+                var user = db.AspNetUsers.Where(i => i.Email == User.Identity.Name).FirstOrDefault();
+                //update reference
+                var bulk_payment = db.MBulkPayments.Find(Id);
+                bulk_payment.Reference = reference;
+                db.Entry(bulk_payment).State = EntityState.Modified;
                 await db.SaveChangesAsync();
-                TempData["msg"] = "Saved";
-                TempData["type"] = "success";
+                //
             }
             catch (Exception ex)
             {
-                TempData["msg"] = ex.Message;
+                TempData["msg"] = ex.StackTrace;
                 TempData["type"] = "error";
-                ViewBag.bulk_payment = new MBulkPayments();
-                return RedirectToAction("EditBulkPayment", "BulkPayments", new { id = BulkPayment.Id });
+                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
+                db.MErrors.Add(error);
+                //db.SaveChanges();
             }
+            return RedirectToAction("EditBulkPayments", "BulkPayments", new { id = Id });
 
-            return RedirectToAction("AllBulkPayments");
         }
 
 
-        [HttpPost("DeleteBulkPayment")]
-        public async Task<IActionResult> DeleteBulkPayment(int id)
+        [HttpPost("DeleteBulkPayments")]
+        public async Task<IActionResult> DeleteBulkPayments(int id)
         {
             try
             {
