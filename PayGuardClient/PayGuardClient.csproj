@@ -18,4 +18,23 @@
     <Folder Include="wwwroot\Raw\" />
   </ItemGroup>
 
+
+  <ItemGroup>
+    <None Include="Views\Auth\Login.cshtml" />
+    <None Include="Views\BulkPayments\ajaxAllBanks.cshtml" />
+    <None Include="Views\BulkPayments\ajaxAllBulkPaymentRecipients.cshtml" />
+    <None Include="Views\BulkPayments\ajaxAllBulkPayments.cshtml" />
+    <None Include="Views\BulkPayments\AllBulkPayments.cshtml" />
+    <None Include="Views\BulkPayments\CreateBulkPayments.cshtml" />
+    <None Include="Views\BulkPayments\EditBulkPayments.cshtml" />
+    <None Include="Views\Home\AllRoles.cshtml" />
+    <None Include="Views\Home\Dashboard.cshtml" />
+    <None Include="Views\Home\Messages.cshtml" />
+    <None Include="Views\Shared\Error.cshtml" />
+    <None Include="Views\Shared\_LayoutAuth.cshtml" />
+    <None Include="Views\Shared\_LayoutMain.cshtml" />
+    <None Include="Views\_ViewImports.cshtml" />
+    <None Include="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+
 </Project>

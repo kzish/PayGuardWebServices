@@ -19,7 +19,14 @@
                     <input type="file" class="form-control" name="file" accept=".csv" />
                     <small class="form-text text-muted">Bulk File <span style="color:red;">Uploading a file will overwrite existing records</span></small>
                 </div>
-                <button type="submit" class="btn btn-primary">Upload</button>
+                @if (bulk_payment.DateLastSubmitted == null)
+                {
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-default">Submitted</button>
+                }
                 <small class="form-text text-muted"><span style="color:red;">1 - Download BulkPay File</span> <a href="~/Raw/BulkPay.csv" download="BulkPay.csv">BulkPay.csv</a></small>
                 <small class="form-text text-muted"><span style="color:red;">2 - Enter beneficiaries</span></small>
                 <small class="form-text text-muted"><span style="color:red;">3 - Upload BulkPay file</span></small>

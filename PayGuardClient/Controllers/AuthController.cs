@@ -15,7 +15,7 @@ namespace admin.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
 
-        dbContext db = new dbContext();
+        private dbContext db = new dbContext();
         public AuthController(SignInManager<IdentityUser> signInManager, UserManager<IdentityUser> userManager,RoleManager<IdentityRole>roleManager)
         {
             this.signInManager = signInManager;

@@ -23,35 +23,47 @@
         <tr>
             <th>Date</th>
             <th>Reference</th>
-            <th>Last Submitted</th>
+            <th>Submitted</th>
             <th>Records</th>
+            <th>Total</th>
             <th>Action</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var item in bulk_payments)
         {
-        <tr>
-            <td title="@item.Date.ToString("d MMM yyyy")">@item.Date.ToString("d MMM yyyy")</td>
-            <td title="@item.Reference">@item.Reference</td>
-            <td title="@item.DateLastSubmitted?.ToString("d MMM yyyy")">@item.DateLastSubmitted?.ToString("d MMM yyyy")</td>
-            <td title="@item.MBulkPaymentsRecipients.Count">(@item.MBulkPaymentsRecipients.Count)</td>
-            <td>
-                <a href="javascript:void(0);" style="color:red;" onclick="confirm_delete('@item.Id')">
-                    Submit
-                </a>
-                |
-                <a href="~/BulkPayments/EditBulkPayments/@item.Id" style="color:blue;">
-                    Open
-                </a>
-            </td>
-        </tr>
+            <tr>
+                <td title="@item.Date.ToString("d MMM yyyy")">@item.Date.ToString("d MMM yyyy")</td>
+                <td title="@item.Reference">@item.Reference</td>
+                <td title="@item.DateLastSubmitted?.ToString("d MMM yyyy")">@item.DateLastSubmitted?.ToString("d MMM yyyy")</td>
+                <td title="@item.MBulkPaymentsRecipients.Count">(@item.MBulkPaymentsRecipients.Count)</td>
+                <td title="@item.MBulkPaymentsRecipients.Sum(i=>i.RecipientAmount).ToString("0.00")">@item.MBulkPaymentsRecipients.Sum(i => i.RecipientAmount).ToString("0.00")</td>
+                <td>
+                    @if (item.DateLastSubmitted != null)
+                    {
+                        <a href="javascript:void(0);" style="color:black;">
+                            Submitted
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="javascript:void(0);" style="color:red;" onclick="confirm_submit('@item.Id')">
+                            Submit
+                        </a>
+                    }
+                    |
+                    <a href="~/BulkPayments/EditBulkPayments/@item.Id" style="color:blue;">
+                        Open
+                    </a>
+                </td>
+            </tr>
         }
     </tbody>
 </table>
 
-<form action="~/Banks/DeleteBank" method="post" id="delete_form">
-    <input type="hidden" value="" name="id" id="delete_id"/>
+
+<form action="~/BulkPayments/SubmitBulkPayment" method="post" id="submit_form">
+    <input type="hidden" value="" name="bulk_payment_id" id="bulk_payment_id" />
 </form>
 
 <script>
@@ -69,15 +81,15 @@
     });
 
 
-    function confirm_delete(id) {
+    function confirm_submit(id) {
         $.confirm({
             title: 'Information',
             type: "red",
-            content: 'Delete this Record?',
+            content: 'Submit Bulk Payment?',
             buttons: {
                 Yes: function () {
-                    $("#delete_id").val(id);
-                    $("#delete_form").submit();
+                    $("#bulk_payment_id").val(id);
+                    $("#submit_form").submit();
                 },
                 No: function () {
                 },

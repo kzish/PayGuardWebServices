@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using PayGuardClient.Models;
 
 namespace PayGuardClient.Controllers
@@ -324,7 +327,89 @@ namespace PayGuardClient.Controllers
             return RedirectToAction("AllBulkPayments");
         }
 
+        [HttpPost("SubmitBulkPayment")]
+        public async Task<IActionResult> SubmitBulkPayment(int bulk_payment_id)
+        {
+            try
+            {
+                //bulk payment and recipients
+                var bulk_payment = db.MBulkPayments
+                    .Where(i => i.Id == bulk_payment_id)//this payment
+                    .Include(i => i.MBulkPaymentsRecipients)//fetch recipients
+                    .Include(i=>i.Company)//fetch company
+                    .FirstOrDefault();
 
+                //construct header of the bulkpayment to be send to the bank
+                var bulk_payment_ = new PayGuard.Models.MBulkPayments();
+                bulk_payment_.Id = bulk_payment.Id;
+                bulk_payment_.Date = bulk_payment.Date;
+                bulk_payment_.Reference = bulk_payment.Reference;
+                bulk_payment_.CompanyId = bulk_payment.CompanyId;
+                bulk_payment_.AspNetUserId = bulk_payment.AspNetUserId;
+                bulk_payment_.DateLastSubmitted = DateTime.Now;
+                bulk_payment_.AccountNumber = bulk_payment.Company.BankAccountNumber;
+                //construct recipients
+                foreach (var item in bulk_payment.MBulkPaymentsRecipients)
+                {
+                    var recipient = new PayGuard.Models.MBulkPaymentsRecipients();
+                    recipient.Id = item.Id;
+                    recipient.RecipientName = item.RecipientName;
+                    recipient.RecipientBankSwiftCode = db.MBank.Where(i => i.Id == item.ERecipientBankId).FirstOrDefault().SwiftCode;
+                    recipient.RecipientAccountNumber = item.RecipientAccountNumber;
+                    recipient.RecipientAmount = item.RecipientAmount;
+                    recipient.BulkPaymentId = item.BulkPaymentId;
+                    bulk_payment_.MBulkPaymentsRecipients.Add(recipient);
+                }
+                //
+                var senders_company = db.MCompany.Find(bulk_payment.CompanyId);
+                var senders_bank = db.MBank.Find(senders_company.EBankCode);
+
+                var http_client = new HttpClient();
+                var request_token = await http_client.GetAsync($"{senders_bank.EndPoint}/PayGuard/v1/RequestToken?clientID={Globals.client_id}&clientSecret={Globals.client_secret}")
+                    .Result
+                    .Content
+                    .ReadAsStringAsync();
+                if(string.IsNullOrEmpty(request_token))
+                {
+                    TempData["msg"] = "Error fetching token";
+                    TempData["type"] = "error";
+                    return RedirectToAction("AllBulkPayments");
+                }
+                dynamic token = JsonConvert.DeserializeObject(request_token);
+                string access_token = token.access_token;
+                //var json_string = JsonConvert.SerializeObject(bulk_payment_);
+                //var http_content = new StringContent(json_string, Encoding.UTF8, "application/json");
+                //add token
+                http_client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
+                var post_response = await http_client.PostAsJsonAsync($"{senders_bank.EndPoint}/PayGuard/v1/UploadBulkPayment", bulk_payment_)
+                    .Result
+                    .Content
+                    .ReadAsStringAsync();
+                //
+                dynamic response = JsonConvert.DeserializeObject(post_response);
+                if((string)response.res=="ok")
+                {
+                    bulk_payment.DateLastSubmitted = DateTime.Now;
+                    await db.SaveChangesAsync();
+                    TempData["msg"] = (string)response.data;
+                    TempData["type"] = "success";
+                }
+                else
+                {
+                    TempData["msg"] = (string)response.msg;
+                    TempData["type"] = "error";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["msg"] = ex.Message;
+                TempData["type"] = "error";
+                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
+                db.MErrors.Add(error);
+                db.SaveChanges();
+            }
+            return RedirectToAction("AllBulkPayments");
+        }
 
     }
 }

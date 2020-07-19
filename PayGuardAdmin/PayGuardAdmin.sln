@@ -3,9 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayGuardAdmin", "PayGuardAdmin.csproj", "{345D4AC8-1E22-4C0D-9BCB-385C7DC3B5BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayGuardAdmin", "PayGuardAdmin.csproj", "{345D4AC8-1E22-4C0D-9BCB-385C7DC3B5BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayGuardClient", "..\PayGuardClient\PayGuardClient.csproj", "{2EE815EA-9500-48D5-8C7E-50127E53F1F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PayGuardClient", "..\PayGuardClient\PayGuardClient.csproj", "{2EE815EA-9500-48D5-8C7E-50127E53F1F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayGuardBankInterface", "..\PayGuardBankInterface\PayGuardBankInterface.csproj", "{46E06DC4-6F25-4D1C-AC59-2FF0D4BA61A0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Auth", "..\Auth\Auth.csproj", "{F5645A95-41D8-446D-81DD-E24C58934A74}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PayGuardRbzInterface", "..\PayGuardRbzInterface\PayGuardRbzInterface.csproj", "{89944B16-9D5B-4800-9D4C-DB43C778DFFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +27,18 @@ Global
 		{2EE815EA-9500-48D5-8C7E-50127E53F1F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2EE815EA-9500-48D5-8C7E-50127E53F1F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2EE815EA-9500-48D5-8C7E-50127E53F1F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46E06DC4-6F25-4D1C-AC59-2FF0D4BA61A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46E06DC4-6F25-4D1C-AC59-2FF0D4BA61A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46E06DC4-6F25-4D1C-AC59-2FF0D4BA61A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46E06DC4-6F25-4D1C-AC59-2FF0D4BA61A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5645A95-41D8-446D-81DD-E24C58934A74}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5645A95-41D8-446D-81DD-E24C58934A74}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5645A95-41D8-446D-81DD-E24C58934A74}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5645A95-41D8-446D-81DD-E24C58934A74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89944B16-9D5B-4800-9D4C-DB43C778DFFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89944B16-9D5B-4800-9D4C-DB43C778DFFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89944B16-9D5B-4800-9D4C-DB43C778DFFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89944B16-9D5B-4800-9D4C-DB43C778DFFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
