@@ -119,6 +119,7 @@ namespace PayGuardBankInterface.Controllers
                 m_bulk_payments_incoming.CompanyId = bulk_payment.CompanyId;
                 m_bulk_payments_incoming.AspNetUserId = bulk_payment.AspNetUserId;
                 m_bulk_payments_incoming.AccountNumber = bulk_payment.AccountNumber;
+                m_bulk_payments_incoming.BankCode = bulk_payment.BankCode;
                 db.MBulkPaymentsIncoming.Add(m_bulk_payments_incoming);
                 await db.SaveChangesAsync();
                 //add recipients

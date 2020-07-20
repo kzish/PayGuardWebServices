@@ -368,6 +368,7 @@ namespace PayGuardClient.Controllers
                 bulk_payment_.AspNetUserId = bulk_payment.AspNetUserId;
                 bulk_payment_.DateLastSubmitted = DateTime.Now;
                 bulk_payment_.AccountNumber = bulk_payment.Company.BankAccountNumber;
+                bulk_payment_.BankCode = db.MBank.Find(senders_company.EBankCode).SwiftCode;
                 //construct recipients
                 foreach (var item in bulk_payment.MBulkPaymentsRecipients)
                 {

@@ -28,7 +28,6 @@ namespace PayGuardRbzInterface.Controllers
         }
 
 
-
         /// <summary>
         /// debit the banks suspense account
         /// </summary>
@@ -51,10 +50,31 @@ namespace PayGuardRbzInterface.Controllers
         }
 
         /// <summary>
+        /// credit the banks suspense account
+        /// </summary>
+        /// <param name="account_number"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        private bool CreditSuspenseAccount(string suspense_account_number, decimal amount)
+        {
+            try
+            {
+                return true;
+            }
+            catch (Exception ex)
+            {
+                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
+                db.MErrors.Add(error);
+                db.SaveChanges();
+                return false;
+            }
+        }
+
+        /// <summary>
         /// gamuchira bulk payment from the client bank 
-        /// save bulk payment into the db
-        /// accepts MBulkPayments type and converts into MBulkPaymentsIncoming
-        /// debits the suspense account
+        /// create payment instructions and store into db
+        /// debits the senders suspense account for the total amount in the bulkpayment
+        /// credits the recipient suspense account for the corresponding total amount in the bulkpayment
         /// </summary>
         /// <param name="bulk_payment"></param>
         /// <returns></returns>
@@ -63,36 +83,36 @@ namespace PayGuardRbzInterface.Controllers
         {
             try
             {
-                //transaction fee stays with the payers bank, it is not debited from the suspense account
-                decimal total_recipient_amount = bulk_payment.MBulkPaymentsIncomingRecipients.Sum(i => i.RecipientAmount);
-                //create new bulkPayment object, copy values, add bulk payment into db
-                var m_bulk_payments_incoming = new MBulkPaymentsIncoming();
-                m_bulk_payments_incoming.IdAtClient = bulk_payment.IdAtClient;
-                m_bulk_payments_incoming.DatePosted = bulk_payment.DatePosted;
-                m_bulk_payments_incoming.DateCreatedAtClient = bulk_payment.DateCreatedAtClient;
-                m_bulk_payments_incoming.Reference = bulk_payment.Reference;
-                m_bulk_payments_incoming.CompanyId = bulk_payment.CompanyId;
-                m_bulk_payments_incoming.AspNetUserId = bulk_payment.AspNetUserId;
-                m_bulk_payments_incoming.AccountNumber = bulk_payment.AccountNumber;
-                //add recipients
+                //create payment instructions for each bankcode and store into db
                 foreach (var item in bulk_payment.MBulkPaymentsIncomingRecipients)
                 {
-                    var recipient = new MBulkPaymentsIncomingRecipients();
-                    recipient.MBulkPaymentsIncomingId = item.MBulkPaymentsIncomingId;
-                    recipient.IdAtClient = item.IdAtClient;
-                    recipient.RecipientName = item.RecipientName;
-                    recipient.RecipientBankSwiftCode = item.RecipientBankSwiftCode;
-                    recipient.RecipientAccountNumber = item.RecipientAccountNumber;
-                    recipient.RecipientAmount = item.RecipientAmount;
-                    recipient.BulkPaymentId = item.BulkPaymentId;
-                    m_bulk_payments_incoming.MBulkPaymentsIncomingRecipients.Add(recipient);
+                    var payment_instruction = new MAccountCreditInstructions();
+                    payment_instruction.Date = DateTime.Now;
+                    payment_instruction.RecipientBankCode = item.RecipientBankSwiftCode;
+                    payment_instruction.RecipientAccountNumber = item.RecipientAccountNumber;
+                    payment_instruction.SenderBankCode = bulk_payment.BankCode;//swift code
+                    payment_instruction.SenderAccountNumber = item.RecipientAccountNumber;
+                    payment_instruction.Amount = item.RecipientAmount;
+                    payment_instruction.Reference = bulk_payment.Reference;
+                    db.MAccountCreditInstructions.Add(payment_instruction);
                 }
-                //
-                db.MBulkPaymentsIncoming.Add(m_bulk_payments_incoming);
                 //
                 await db.SaveChangesAsync();
                 //debit the suspense account
-                DebitSuspenseAccount(bulk_payment.AccountNumber, total_recipient_amount);
+                //transaction fee stays with the payers bank, it is not debited from the suspense account
+                decimal total_recipient_amount = bulk_payment.MBulkPaymentsIncomingRecipients.Sum(i => i.RecipientAmount);
+                DebitSuspenseAccount(bulk_payment.BankCode, total_recipient_amount);
+                //credit each recipient bank
+                var banks = db.MBank.ToList();
+                foreach( var bank in banks)
+                {
+                    var total_amount_to_credit_for_this_bank = bulk_payment
+                        .MBulkPaymentsIncomingRecipients
+                        .Where(i => i.RecipientBankSwiftCode == bank.SwiftCode)
+                        .Sum(i => i.RecipientAmount);
+                    //
+                    CreditSuspenseAccount(bank.SwiftCode, total_amount_to_credit_for_this_bank);
+                }
                 //
                 return Json(new
                 {

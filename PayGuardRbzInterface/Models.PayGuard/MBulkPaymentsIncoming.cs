@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
-namespace PayGuardRbzInterface.Models
+namespace PayGuard.Models
 {
     public partial class MBulkPaymentsIncoming
     {
@@ -11,7 +10,6 @@ namespace PayGuardRbzInterface.Models
             MBulkPaymentsIncomingRecipients = new HashSet<MBulkPaymentsIncomingRecipients>();
         }
 
-        [Key]
         public int Id { get; set; }
         public int IdAtClient { get; set; }
         public DateTime DatePosted { get; set; }
@@ -21,6 +19,7 @@ namespace PayGuardRbzInterface.Models
         public string AspNetUserId { get; set; }
         public DateTime? DateProcessed { get; set; }
         public string AccountNumber { get; set; }
+        public string BankCode { get; set; }
 
         public virtual ICollection<MBulkPaymentsIncomingRecipients> MBulkPaymentsIncomingRecipients { get; set; }
     }

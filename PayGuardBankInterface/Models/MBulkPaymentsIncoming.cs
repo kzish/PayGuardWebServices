@@ -19,6 +19,7 @@ namespace PayGuardBankInterface.Models
         public string AspNetUserId { get; set; }
         public DateTime? DateProcessed { get; set; }
         public string AccountNumber { get; set; }
+        public string BankCode { get; set; }
 
         public virtual ICollection<MBulkPaymentsIncomingRecipients> MBulkPaymentsIncomingRecipients { get; set; }
     }

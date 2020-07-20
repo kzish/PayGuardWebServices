@@ -15,6 +15,7 @@ namespace PayGuardBankInterface.Models
         {
         }
 
+        public virtual DbSet<MAccountCreditInstructions> MAccountCreditInstructions { get; set; }
         public virtual DbSet<MBank> MBank { get; set; }
         public virtual DbSet<MBulkPaymentsIncoming> MBulkPaymentsIncoming { get; set; }
         public virtual DbSet<MBulkPaymentsIncomingRecipients> MBulkPaymentsIncomingRecipients { get; set; }
@@ -25,13 +26,55 @@ namespace PayGuardBankInterface.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("server=localhost;database=PayGuardBankINterface;User Id=sa;Password=123abc;");
+                optionsBuilder.UseSqlServer("server=localhost;database=PayGuardbankINterface;User Id=sa;Password=123abc;");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("ProductVersion", "2.2.6-servicing-10079");
+
+            modelBuilder.Entity<MAccountCreditInstructions>(entity =>
+            {
+                entity.ToTable("m_account_credit_instructions");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Amount)
+                    .HasColumnName("amount")
+                    .HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.Date)
+                    .HasColumnName("date")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.RecipientAccountNumber)
+                    .HasColumnName("recipient_account_number")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.RecipientBankCode)
+                    .HasColumnName("recipient_bank_code")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Reference)
+                    .IsRequired()
+                    .HasColumnName("reference")
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SenderAccountNumber)
+                    .IsRequired()
+                    .HasColumnName("sender_account_number")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SenderBankCode)
+                    .IsRequired()
+                    .HasColumnName("sender_bank_code")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
 
             modelBuilder.Entity<MBank>(entity =>
             {
@@ -75,6 +118,12 @@ namespace PayGuardBankInterface.Models
                     .IsRequired()
                     .HasColumnName("asp_net_user_id")
                     .HasMaxLength(450);
+
+                entity.Property(e => e.BankCode)
+                    .IsRequired()
+                    .HasColumnName("bank_code")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.CompanyId).HasColumnName("company_id");
 

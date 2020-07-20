@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PayGuardRbzInterface.Models
+namespace PayGuard.Models
 {
     public partial class MBulkPaymentsIncomingRecipients
     {
