@@ -32,13 +32,13 @@ namespace PayGuardBankInterface.Services
             var autoEvent = new AutoResetEvent(false);
             timer = new Timer(RunTask, autoEvent, 0, 5000);//5 sec timer
         }
+
         /// <summary>
         /// task will forward bulk payment to rbz
         /// </summary>
         /// <param name="state"></param>
         public void RunTask(object state)
         {
-            var db = new dbContext();
             //
             if (busy) return;
 
@@ -47,7 +47,7 @@ namespace PayGuardBankInterface.Services
                 //
                 busy = true;
                 //
-                //using ()
+                using (var db= new dbContext())
                 {
                     //grab a bulk payment from the db
                     var bulk_payment = db.MBulkPaymentsIncoming
@@ -100,24 +100,23 @@ namespace PayGuardBankInterface.Services
                         db.MErrors.Add(error);
                         db.SaveChanges();
                     }
-                    //db.Dispose();
+                    db.Dispose();
                 }//using
 
             }
             catch (Exception ex)
             {
-                //using (var db = new dbContext())
+                using (var db = new dbContext())
                 {
                     var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
                     db.MErrors.Add(error);
                     db.SaveChanges();
-                    //db.Dispose();
+                    db.Dispose();
                 }
             }
             finally
             {
                 busy = false;
-                db.Dispose();
             }
 
 

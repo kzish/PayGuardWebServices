@@ -47,9 +47,12 @@
                     }
                     else
                     {
-                        <a href="javascript:void(0);" style="color:red;" onclick="confirm_submit('@item.Id')">
-                            Submit
-                        </a>
+                        @if (item.MBulkPaymentsRecipients.Count > 0)
+                        {
+                            <a href="javascript:void(0);" style="color:red;" onclick="confirm_submit('@item.Id')">
+                                Submit
+                            </a>
+                        }
                     }
                     |
                     <a href="~/BulkPayments/EditBulkPayments/@item.Id" style="color:blue;">

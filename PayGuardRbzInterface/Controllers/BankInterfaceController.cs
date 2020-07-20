@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayGuard.Models;
 using PayGuardRbzInterface.Models;
+using PayGuardRbzInterface.Services;
 
 namespace PayGuardRbzInterface.Controllers
 {
@@ -19,6 +20,15 @@ namespace PayGuardRbzInterface.Controllers
     [Authorize(AuthenticationSchemes = "Bearer")]//allow only authorized by Bearer
     public class BankInterfaceController : Controller
     {
+
+        private readonly ITimerBulkPaymentsForwardingToRecipientBanks sTimerBulkPaymentsForwardingToRecipientBanks;
+        //start the service
+        public BankInterfaceController(ITimerBulkPaymentsForwardingToRecipientBanks sTimerBulkPaymentsForwardingToRecipientBanks)
+        {
+            this.sTimerBulkPaymentsForwardingToRecipientBanks = sTimerBulkPaymentsForwardingToRecipientBanks;
+        }
+
+
         private dbContext db = new dbContext();
 
         protected override void Dispose(bool disposing)

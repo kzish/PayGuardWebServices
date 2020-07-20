@@ -80,6 +80,27 @@ namespace PayGuardBankInterface.Controllers
         }
 
         /// <summary>
+        /// credit the recipient account
+        /// </summary>
+        /// <param name="account_number"></param>
+        /// <param name="amount"></param>
+        /// <returns></returns>
+        private bool CreditAccount(string account_number, decimal amount)
+        {
+            try
+            {
+                return true;
+            }
+            catch (Exception ex)
+            {
+                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
+                db.MErrors.Add(error);
+                db.SaveChanges();
+                return false;
+            }
+        }
+
+        /// <summary>
         /// gamuchira bulk payment from the client portal 
         /// save bulk payment into the db
         /// accepts MBulkPayments type and converts into MBulkPaymentsIncoming
@@ -160,5 +181,49 @@ namespace PayGuardBankInterface.Controllers
         }
 
 
+        /// <summary>
+        /// gamuchira list of payment instructions from rbz
+        /// store payment instructions in the database
+        /// </summary>
+        /// <param name="payments"></param>
+        /// <returns></returns>
+        [HttpPost("UploadPaymentInstructions")]
+        public async Task<JsonResult> UploadPaymentInstructions([FromBody] List<MAccountCreditInstructions> payments)
+        {
+            try
+            {  
+                //
+                foreach(var item in payments)
+                {
+                    var payment = new MAccountCreditInstructions();
+                    payment.Date = DateTime.Now;
+                    payment.RecipientBankCode = item.RecipientBankCode;
+                    payment.RecipientAccountNumber = item.RecipientAccountNumber;
+                    payment.SenderBankCode = item.SenderBankCode;
+                    payment.SenderAccountNumber = item.SenderAccountNumber;
+                    payment.Amount = item.Amount;
+                    payment.Reference = item.Reference;
+                    db.MAccountCreditInstructions.Add(payment);
+                }
+                await db.SaveChangesAsync();
+                return Json(new
+                {
+                    res = "ok",
+                    data = "Bulk Payments Submitted"
+                });
+            }
+            catch (Exception ex)
+            {
+                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
+                db.MErrors.Add(error);
+                db.SaveChanges();
+                return Json(new
+                {
+                    res = "err",
+                    msg = ex.Message
+                });
+            }
+        }
     }
+
 }

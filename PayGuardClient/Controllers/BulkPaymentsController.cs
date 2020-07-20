@@ -124,22 +124,49 @@ namespace PayGuardClient.Controllers
                 //create bulk_payment recipients
                 var bulk_payment_recipients = new List<MBulkPaymentsRecipients>();
                 int num_errors = 0;
+                int row_index = 0;
                 foreach (var line in bulk_payment_data)
                 {
+                    if (row_index == 0)
+                    {
+                        row_index++;
+                        continue;//skip the first row it contains header information
+                    }
                     try
                     {
                         var bulk_payment_recipient = new MBulkPaymentsRecipients();
+                        //
                         bulk_payment_recipient.RecipientName = line.Split(',')[0];
+                        if (string.IsNullOrEmpty(bulk_payment_recipient.RecipientName))
+                        {
+                            num_errors++;
+                            continue;
+                        }
                         //
                         int ERecipientBankId = 0;
                         int.TryParse(line.Split(',')[1], out ERecipientBankId);
                         bulk_payment_recipient.ERecipientBankId = ERecipientBankId;
+                        if (ERecipientBankId==0)
+                        {
+                            num_errors++;
+                            continue;
+                        }
                         //
                         bulk_payment_recipient.RecipientAccountNumber = line.Split(',')[2];
+                        if (string.IsNullOrEmpty(bulk_payment_recipient.RecipientAccountNumber))
+                        {
+                            num_errors++;
+                            continue;
+                        }
                         //
-                        decimal RecipientAmount = decimal.Zero;
+                        decimal RecipientAmount = 0;
                         decimal.TryParse(line.Split(',')[3], out RecipientAmount);
                         bulk_payment_recipient.RecipientAmount = RecipientAmount;
+                        if (bulk_payment_recipient.RecipientAmount == 0)
+                        {
+                            num_errors++;
+                            continue;
+                        }
                         //
                         bulk_payment_recipient.BulkPaymentId = bulk_payment.Id;
                         bulk_payment_recipients.Add(bulk_payment_recipient);
@@ -358,7 +385,7 @@ namespace PayGuardClient.Controllers
                 string access_token = token.access_token;
                 //add token
                 http_client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
-                
+
                 //construct header of the bulkpayment to be send to rbz
                 var bulk_payment_ = new PayGuard.Models.MBulkPayments();
                 bulk_payment_.Id = bulk_payment.Id;

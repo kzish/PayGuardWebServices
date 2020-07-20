@@ -21,7 +21,7 @@ using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-
+using PayGuardRbzInterface.Services;
 
 namespace PayGuardRbzInterface
 {
@@ -89,7 +89,7 @@ namespace PayGuardRbzInterface
             });
 
 
-
+            services.AddSingleton<ITimerBulkPaymentsForwardingToRecipientBanks, sTimerBulkPaymentsForwardingToRecipientBanks>();//add the timer service scheduler as a singleton
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)
