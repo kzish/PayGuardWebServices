@@ -336,10 +336,30 @@ namespace PayGuardClient.Controllers
                 var bulk_payment = db.MBulkPayments
                     .Where(i => i.Id == bulk_payment_id)//this payment
                     .Include(i => i.MBulkPaymentsRecipients)//fetch recipients
-                    .Include(i=>i.Company)//fetch company
+                    .Include(i => i.Company)//fetch company
                     .FirstOrDefault();
-
-                //construct header of the bulkpayment to be send to the bank
+                //
+                var senders_company = db.MCompany.Find(bulk_payment.CompanyId);
+                var senders_bank = db.MBank.Find(senders_company.EBankCode);
+                //
+                var http_client = new HttpClient();
+                var request_token = await http_client.GetAsync($"{senders_bank.EndPoint}/PayGuard/v1/RequestToken?clientID={Globals.client_id}&clientSecret={Globals.client_secret}")
+                    .Result
+                    .Content
+                    .ReadAsStringAsync();
+                if (string.IsNullOrEmpty(request_token))
+                {
+                    TempData["msg"] = "Error fetching token";
+                    TempData["type"] = "error";
+                    return RedirectToAction("AllBulkPayments");
+                }
+                //
+                dynamic token = JsonConvert.DeserializeObject(request_token);
+                string access_token = token.access_token;
+                //add token
+                http_client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
+                
+                //construct header of the bulkpayment to be send to rbz
                 var bulk_payment_ = new PayGuard.Models.MBulkPayments();
                 bulk_payment_.Id = bulk_payment.Id;
                 bulk_payment_.Date = bulk_payment.Date;
@@ -360,34 +380,14 @@ namespace PayGuardClient.Controllers
                     recipient.BulkPaymentId = item.BulkPaymentId;
                     bulk_payment_.MBulkPaymentsRecipients.Add(recipient);
                 }
-                //
-                var senders_company = db.MCompany.Find(bulk_payment.CompanyId);
-                var senders_bank = db.MBank.Find(senders_company.EBankCode);
-
-                var http_client = new HttpClient();
-                var request_token = await http_client.GetAsync($"{senders_bank.EndPoint}/PayGuard/v1/RequestToken?clientID={Globals.client_id}&clientSecret={Globals.client_secret}")
-                    .Result
-                    .Content
-                    .ReadAsStringAsync();
-                if(string.IsNullOrEmpty(request_token))
-                {
-                    TempData["msg"] = "Error fetching token";
-                    TempData["type"] = "error";
-                    return RedirectToAction("AllBulkPayments");
-                }
-                dynamic token = JsonConvert.DeserializeObject(request_token);
-                string access_token = token.access_token;
-                //var json_string = JsonConvert.SerializeObject(bulk_payment_);
-                //var http_content = new StringContent(json_string, Encoding.UTF8, "application/json");
-                //add token
-                http_client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
+                //upload bulkpayment to clients bank                
                 var post_response = await http_client.PostAsJsonAsync($"{senders_bank.EndPoint}/PayGuard/v1/UploadBulkPayment", bulk_payment_)
                     .Result
                     .Content
                     .ReadAsStringAsync();
                 //
                 dynamic response = JsonConvert.DeserializeObject(post_response);
-                if((string)response.res=="ok")
+                if ((string)response.res == "ok")
                 {
                     bulk_payment.DateLastSubmitted = DateTime.Now;
                     await db.SaveChangesAsync();

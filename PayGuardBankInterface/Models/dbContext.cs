@@ -25,7 +25,7 @@ namespace PayGuardBankInterface.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("server=localhost;database=PayGuardBankInterface;User Id=sa;Password=123abc;");
+                optionsBuilder.UseSqlServer("server=localhost;database=PayGuardBankINterface;User Id=sa;Password=123abc;");
             }
         }
 
@@ -65,7 +65,11 @@ namespace PayGuardBankInterface.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.AccountNumber).HasColumnName("account_number");
+                entity.Property(e => e.AccountNumber)
+                    .IsRequired()
+                    .HasColumnName("account_number")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.AspNetUserId)
                     .IsRequired()
@@ -138,9 +142,7 @@ namespace PayGuardBankInterface.Models
             {
                 entity.ToTable("m_errors");
 
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Data1)
                     .HasColumnName("data1")

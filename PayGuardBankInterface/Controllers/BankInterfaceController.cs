@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayGuard.Models;
 using PayGuardBankInterface.Models;
+using PayGuardBankInterface.Services;
 
 namespace PayGuardBankInterface.Controllers
 {
@@ -21,6 +22,13 @@ namespace PayGuardBankInterface.Controllers
     {
         private dbContext db = new dbContext();
 
+        //timers
+        private readonly ITimerBulkPaymentsForwardingToRbz ITimerBulkPaymentsForwardingToRbz;
+        public BankInterfaceController(ITimerBulkPaymentsForwardingToRbz ITimerBulkPaymentsForwardingToRbz)
+        {
+            this.ITimerBulkPaymentsForwardingToRbz = ITimerBulkPaymentsForwardingToRbz;
+        }
+
         protected override void Dispose(bool disposing)
         {
             base.Dispose(disposing);
@@ -33,6 +41,7 @@ namespace PayGuardBankInterface.Controllers
         /// <param name="account_number"></param>
         /// <param name="amount"></param>
         /// <returns></returns>
+        //[HttpGet("GetAccountBalance")]
         private decimal GetAccountBalance(string account_number)
         {
             try
@@ -54,6 +63,7 @@ namespace PayGuardBankInterface.Controllers
         /// <param name="account_number"></param>
         /// <param name="amount"></param>
         /// <returns></returns>
+        //[HttpPost("DebitAccount")]
         private bool DebitAccount(string account_number, decimal amount)
         {
             try
@@ -69,24 +79,34 @@ namespace PayGuardBankInterface.Controllers
             }
         }
 
-
+        /// <summary>
+        /// gamuchira bulk payment from the client portal 
+        /// save bulk payment into the db
+        /// accepts MBulkPayments type and converts into MBulkPaymentsIncoming
+        /// debits the bank account
+        /// debits the transaction fee
+        /// todo: put transaction fee into another account
+        /// </summary>
+        /// <param name="bulk_payment"></param>
+        /// <returns></returns>
         [HttpPost("UploadBulkPayment")]
         public async Task<JsonResult> UploadBulkPayment([FromBody] MBulkPayments bulk_payment)
         {
             try
             {
-
+                //transaction fee stays with the payers bank, it is not debited from the suspense account
                 decimal total_recipient_amount = bulk_payment.MBulkPaymentsRecipients.Sum(i => i.RecipientAmount);
-                decimal transaction_fee = 0;
-                decimal total_amount_to_debit = (total_recipient_amount + transaction_fee);
-                var available_balance = GetAccountBalance("");
+                decimal transaction_fee = 0;//todo: get transaction fee from each bank
 
-                if (available_balance < total_amount_to_debit)
+                decimal total_amount_to_debit = total_recipient_amount + transaction_fee;
+                decimal account_balance = GetAccountBalance(bulk_payment.AccountNumber);
+
+                if (account_balance < total_amount_to_debit)
                 {
                     return Json(new
                     {
                         res = "err",
-                        msg = $"Insufficient balance. Available balance: {available_balance.ToString("0.00")}"
+                        msg = $"Insufficient balance. Available funds: {account_balance}"
                     });
                 }
 
@@ -98,6 +118,7 @@ namespace PayGuardBankInterface.Controllers
                 m_bulk_payments_incoming.Reference = bulk_payment.Reference;
                 m_bulk_payments_incoming.CompanyId = bulk_payment.CompanyId;
                 m_bulk_payments_incoming.AspNetUserId = bulk_payment.AspNetUserId;
+                m_bulk_payments_incoming.AccountNumber = bulk_payment.AccountNumber;
                 db.MBulkPaymentsIncoming.Add(m_bulk_payments_incoming);
                 await db.SaveChangesAsync();
                 //add recipients
@@ -113,11 +134,11 @@ namespace PayGuardBankInterface.Controllers
                     m_bulk_payments_incoming_recipients.BulkPaymentId = item.BulkPaymentId;
                     db.MBulkPaymentsIncomingRecipients.Add(m_bulk_payments_incoming_recipients);
                 }
-
+                //
                 await db.SaveChangesAsync();
-
+                //
                 DebitAccount(bulk_payment.AccountNumber, total_amount_to_debit);
-
+                //
                 return Json(new
                 {
                     res = "ok",

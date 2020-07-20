@@ -8,5 +8,5 @@ using Newtonsoft.Json;
 
 public class Globals
 {
-
+    public static string auth_end_point = "http://localhost/Auth";
 }
