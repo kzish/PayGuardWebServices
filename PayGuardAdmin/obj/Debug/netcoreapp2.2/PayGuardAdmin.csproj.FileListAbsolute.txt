@@ -44,3 +44,4 @@ C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\o
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Companies\AllCompanies.cshtml.g.cs
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Companies\CreateCompany.cshtml.g.cs
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Companies\EditCompany.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardAdmin\obj\Debug\netcoreapp2.2\Razor\Views\Home\ajaxAllBanks.cshtml.g.cs

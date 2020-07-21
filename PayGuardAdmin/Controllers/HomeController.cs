@@ -36,9 +36,9 @@ namespace SpeedLinkAdminPortal.Controllers
 
             try
             {
-
-               
-
+                ViewBag.num_clients = db.MCompany.Count();
+                ViewBag.num_banks_online = db.MBank.Where(i => i.Online).Count();
+                ViewBag.num_banks_offline = db.MBank.Where(i => !i.Online).Count();
             }
             catch (Exception ex)
             {
@@ -51,20 +51,11 @@ namespace SpeedLinkAdminPortal.Controllers
         }
 
 
-        [HttpGet("Messages")]
-        public IActionResult  Messages()
+        [HttpGet("ajaxAllBanks")]
+        public IActionResult ajaxAllBanks()
         {
-            ViewBag.title = "Messages";
-            return View();
-        }
-
-
-        [HttpGet("AllRoles")]
-        public IActionResult AllRoles()
-        {
-            ViewBag.title = "All Roles";
-            var roles = roleManager.Roles.ToList();
-            ViewBag.roles = roles;
+            var banks = db.MBank.ToList();
+            ViewBag.banks = banks;
             return View();
         }
 

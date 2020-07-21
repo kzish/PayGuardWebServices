@@ -89,7 +89,8 @@ namespace PayGuardBankInterface
             });
 
 
-            services.AddSingleton<ITimerBulkPaymentsForwardingToRbz, sTimerBulkPaymentsForwardingToRbz>();//add the timer service scheduler as a singleton
+            services.AddSingleton<ITimerTimerBulkPaymentsForwardingToRbz, sTimerBulkPaymentsForwardingToRbz>();//add the timer service scheduler as a singleton
+            services.AddSingleton<ITimerTimerProcessPaymentInstructions, sTimerProcessPaymentInstructions>();//add the timer service scheduler as a singleton
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)

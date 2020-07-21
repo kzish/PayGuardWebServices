@@ -23,10 +23,13 @@ namespace PayGuardBankInterface.Controllers
         private dbContext db = new dbContext();
 
         //timers
-        private readonly ITimerBulkPaymentsForwardingToRbz ITimerBulkPaymentsForwardingToRbz;
-        public BankInterfaceController(ITimerBulkPaymentsForwardingToRbz ITimerBulkPaymentsForwardingToRbz)
+        private readonly ITimerTimerBulkPaymentsForwardingToRbz ITimerTimerBulkPaymentsForwardingToRbz;
+        private readonly ITimerTimerProcessPaymentInstructions ITimerTimerProcessPaymentInstructions;
+        //
+        public BankInterfaceController(ITimerTimerBulkPaymentsForwardingToRbz ITimerTimerBulkPaymentsForwardingToRbz, ITimerTimerProcessPaymentInstructions ITimerTimerProcessPaymentInstructions)
         {
-            this.ITimerBulkPaymentsForwardingToRbz = ITimerBulkPaymentsForwardingToRbz;
+            this.ITimerTimerBulkPaymentsForwardingToRbz = ITimerTimerBulkPaymentsForwardingToRbz;
+            this.ITimerTimerProcessPaymentInstructions = ITimerTimerProcessPaymentInstructions;
         }
 
         protected override void Dispose(bool disposing)
@@ -57,48 +60,6 @@ namespace PayGuardBankInterface.Controllers
             }
         }
 
-        /// <summary>
-        /// debit the payers account
-        /// </summary>
-        /// <param name="account_number"></param>
-        /// <param name="amount"></param>
-        /// <returns></returns>
-        //[HttpPost("DebitAccount")]
-        private bool DebitAccount(string account_number, decimal amount)
-        {
-            try
-            {
-                return true;
-            }
-            catch (Exception ex)
-            {
-                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
-                db.MErrors.Add(error);
-                db.SaveChanges();
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// credit the recipient account
-        /// </summary>
-        /// <param name="account_number"></param>
-        /// <param name="amount"></param>
-        /// <returns></returns>
-        private bool CreditAccount(string account_number, decimal amount)
-        {
-            try
-            {
-                return true;
-            }
-            catch (Exception ex)
-            {
-                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
-                db.MErrors.Add(error);
-                db.SaveChanges();
-                return false;
-            }
-        }
 
         /// <summary>
         /// gamuchira bulk payment from the client portal 
@@ -115,13 +76,13 @@ namespace PayGuardBankInterface.Controllers
         {
             try
             {
-                //transaction fee stays with the payers bank, it is not debited from the suspense account
+                //transaction fee stays with the payers bank, it is not debited from the suspense account at rbz
                 decimal total_recipient_amount = bulk_payment.MBulkPaymentsRecipients.Sum(i => i.RecipientAmount);
                 decimal transaction_fee = 0;//todo: get transaction fee from each bank
-
+                //todo: is the transaction fee per each beneficiary or per each bulk payment
                 decimal total_amount_to_debit = total_recipient_amount + transaction_fee;
                 decimal account_balance = GetAccountBalance(bulk_payment.AccountNumber);
-
+                //
                 if (account_balance < total_amount_to_debit)
                 {
                     return Json(new
@@ -158,8 +119,8 @@ namespace PayGuardBankInterface.Controllers
                 }
                 //
                 await db.SaveChangesAsync();
-                //
-                DebitAccount(bulk_payment.AccountNumber, total_amount_to_debit);
+                //debit the clients bank account
+                Globals.DebitAccount(bulk_payment.AccountNumber, total_amount_to_debit);
                 //
                 return Json(new
                 {
@@ -184,6 +145,7 @@ namespace PayGuardBankInterface.Controllers
         /// <summary>
         /// gamuchira list of payment instructions from rbz
         /// store payment instructions in the database
+        /// they will be processed async by another service
         /// </summary>
         /// <param name="payments"></param>
         /// <returns></returns>
@@ -191,9 +153,9 @@ namespace PayGuardBankInterface.Controllers
         public async Task<JsonResult> UploadPaymentInstructions([FromBody] List<MAccountCreditInstructions> payments)
         {
             try
-            {  
+            {
                 //
-                foreach(var item in payments)
+                foreach (var item in payments)
                 {
                     var payment = new MAccountCreditInstructions();
                     payment.Date = DateTime.Now;

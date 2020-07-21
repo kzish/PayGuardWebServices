@@ -97,9 +97,22 @@ namespace PayGuardRbzInterface.Services
                         dynamic response = JsonConvert.DeserializeObject(post_response);
                         if ((string)response.res == "ok")
                         {
-                            //remove these payments
-                            db.MAccountCreditInstructions.RemoveRange(payments);
-                            db.SaveChanges();
+                            //store into processed and remove this bulk payment
+                            foreach(var item in payments)
+                            {
+                                var processed = new MAccountCreditInstructionsProcessed();
+                                processed.Date = DateTime.Now;
+                                processed.RecipientBankCode = item.RecipientBankCode;
+                                processed.RecipientAccountNumber = item.RecipientAccountNumber;
+                                processed.SenderBankCode = item.SenderBankCode;
+                                processed.SenderAccountNumber = item.SenderAccountNumber;
+                                processed.Amount = item.Amount;
+                                processed.Reference = item.Reference;
+                                db.MAccountCreditInstructionsProcessed.Add(processed);//add to processed
+                                db.MAccountCreditInstructions.Remove(item);//remove from inbox
+
+                            }
+                            db.SaveChanges();//save
                         }
                         else
                         {

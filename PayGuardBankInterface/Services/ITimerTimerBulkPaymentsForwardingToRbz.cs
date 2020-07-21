@@ -8,7 +8,7 @@ namespace PayGuardBankInterface.Services
     /// <summary>
     /// timer interface
     /// </summary>
-    public interface ITimerBulkPaymentsForwardingToRbz
+    public interface ITimerTimerBulkPaymentsForwardingToRbz
     {
         void RunTask(object state);
     }

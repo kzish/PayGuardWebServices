@@ -35,7 +35,18 @@
             <td title="@item.BankName">@item.BankName</td>
             <td title="@item.SwiftCode">@item.SwiftCode</td>
             <td title="@item.EndPoint">@item.EndPoint</td>
-            <td title="@item.Online.ToString()">@item.Online.ToString()</td>
+            @if (item.Online)
+            {
+                <td>
+                    <img src="~/assets/img/online_icon.png" height="25" width="25" />
+                </td>
+            }
+            else
+            {
+                <td>
+                    <img src="~/assets/img/offline_icon.png" height="25" width="25" />
+                </td>
+            }
 
             <td>
                 <a href="javascript:void(0);" style="color:red;" onclick="confirm_delete('@item.Id')">

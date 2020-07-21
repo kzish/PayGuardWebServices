@@ -68,7 +68,8 @@ namespace PayGuardClient.Controllers
         [HttpGet("ajaxAllBanks")]
         public IActionResult ajaxAllBanks()
         {
-            var banks = db.MBank.ToList();
+            //only banks online
+            var banks = db.MBank.Where(i=>i.Online).ToList();
             ViewBag.banks = banks;
             return View();
         }
@@ -145,8 +146,10 @@ namespace PayGuardClient.Controllers
                         //
                         int ERecipientBankId = 0;
                         int.TryParse(line.Split(',')[1], out ERecipientBankId);
+                        //ensure bank is online
+                        var is_bank_online = db.MBank.Where(i => i.Online && i.Id == ERecipientBankId).Any();
                         bulk_payment_recipient.ERecipientBankId = ERecipientBankId;
-                        if (ERecipientBankId==0)
+                        if (ERecipientBankId==0||!is_bank_online)
                         {
                             num_errors++;
                             continue;
@@ -181,7 +184,7 @@ namespace PayGuardClient.Controllers
                 await db.SaveChangesAsync();
                 TempData["msg"] = $"You have {num_errors} errors and {bulk_payment_data.Count()} records";
                 TempData["type"] = "warning";
-                return RedirectToAction("EditBulkPayment", "BulkPayments", new { id = bulk_payment.Id });
+                return RedirectToAction("EditBulkPayments", "BulkPayments", new { id = bulk_payment.Id });
 
             }
             catch (Exception ex)

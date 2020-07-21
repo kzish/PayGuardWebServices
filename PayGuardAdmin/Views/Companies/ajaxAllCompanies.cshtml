@@ -26,9 +26,6 @@
             <th>ContactMobile</th>
             <th>ContactEmail</th>
             <th>Bank</th>
-            <th>BankAccountName</th>
-            <th>BankAccountNumber</th>
-            <th>BankBranchCode</th>
             <th>Action</th>
         </tr>
     </thead>
@@ -41,9 +38,6 @@
                 <td title="@item.ContactMobile">@item.ContactMobile</td>
                 <td title="@item.ContactEmail">@item.ContactEmail</td>
                 <td title="@item.EBankCodeNavigation.BankName">@item.EBankCodeNavigation.BankName</td>
-                <td title="@item.BankAccountName">@item.BankAccountName</td>
-                <td title="@item.BankAccountNumber">@item.BankAccountNumber</td>
-                <td title="@item.BankBranchCode">@item.BankBranchCode</td>
                 <td>
                     <a href="javascript:void(0);" style="color:red;" onclick="confirm_delete('@item.Id')">
                         Delete

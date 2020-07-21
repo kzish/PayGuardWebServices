@@ -36,9 +36,8 @@ namespace SpeedLinkAdminPortal.Controllers
 
             try
             {
-
-               
-
+                var banks = db.MBank.ToList();
+                ViewBag.banks = banks;
             }
             catch (Exception ex)
             {
@@ -51,20 +50,11 @@ namespace SpeedLinkAdminPortal.Controllers
         }
 
 
-        [HttpGet("Messages")]
-        public IActionResult  Messages()
+        [HttpGet("ajaxAllBanks")]
+        public IActionResult ajaxAllBanks()
         {
-            ViewBag.title = "Messages";
-            return View();
-        }
-
-
-        [HttpGet("AllRoles")]
-        public IActionResult AllRoles()
-        {
-            ViewBag.title = "All Roles";
-            var roles = roleManager.Roles.ToList();
-            ViewBag.roles = roles;
+            var banks = db.MBank.ToList();
+            ViewBag.banks = banks;
             return View();
         }
 

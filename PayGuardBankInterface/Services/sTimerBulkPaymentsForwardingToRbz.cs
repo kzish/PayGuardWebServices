@@ -20,7 +20,7 @@ namespace PayGuardBankInterface.Services
     /// <summary>
     /// sends the bulk payments to rbz
     /// </summary>
-    public class sTimerBulkPaymentsForwardingToRbz : ITimerBulkPaymentsForwardingToRbz
+    public class sTimerBulkPaymentsForwardingToRbz : ITimerTimerBulkPaymentsForwardingToRbz
     {
 
         private Timer timer;
@@ -47,7 +47,7 @@ namespace PayGuardBankInterface.Services
                 //
                 busy = true;
                 //
-                using (var db= new dbContext())
+                using (var db = new dbContext())
                 {
                     //grab a bulk payment from the db
                     var bulk_payment = db.MBulkPaymentsIncoming
@@ -78,7 +78,7 @@ namespace PayGuardBankInterface.Services
                     //upload bulkpayment to rbz        
                     var json_string = JsonConvert.SerializeObject(bulk_payment, new JsonSerializerSettings()
                     {
-                        ReferenceLoopHandling=ReferenceLoopHandling.Ignore
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore
                     });
                     var http_content = new StringContent(json_string, Encoding.UTF8, "application/json");
                     var post_response = http_client.PostAsync($"{Globals.rbz_end_point}/PayGuard/v1/UploadBulkPayment", http_content)
@@ -90,12 +90,40 @@ namespace PayGuardBankInterface.Services
                     dynamic response = JsonConvert.DeserializeObject(post_response);
                     if ((string)response.res == "ok")
                     {
-                        //clear this bulkpayment
+                        //move to processed table and clear this bulkpayment
+                        var processed = new MBulkPaymentsIncomingProcessed();
+                        processed.IdAtClient = bulk_payment.IdAtClient;
+                        processed.DatePosted = bulk_payment.DatePosted;
+                        processed.DateCreatedAtClient = bulk_payment.DateCreatedAtClient;
+                        processed.Reference = bulk_payment.Reference;
+                        processed.CompanyId = bulk_payment.CompanyId;
+                        processed.AspNetUserId = bulk_payment.AspNetUserId;
+                        processed.DateProcessed = DateTime.Now;
+                        processed.AccountNumber = bulk_payment.AccountNumber;
+                        processed.BankCode = bulk_payment.BankCode;
+                        //
+                        db.MBulkPaymentsIncomingProcessed.Add(processed);
+                        db.SaveChanges();
+                        //save recipients
+                        foreach(var item in bulk_payment.MBulkPaymentsIncomingRecipients)
+                        {
+                            var recipient = new MBulkPaymentsIncomingRecipientsProcessed();
+                            recipient.MBulkPaymentsIncomingId = processed.Id;
+                            recipient.IdAtClient = item.IdAtClient;
+                            recipient.RecipientName = item.RecipientName;
+                            recipient.RecipientBankSwiftCode = item.RecipientBankSwiftCode;
+                            recipient.RecipientAccountNumber = item.RecipientAccountNumber;
+                            recipient.RecipientAmount = item.RecipientAmount;
+                            recipient.BulkPaymentId = item.BulkPaymentId;
+                            db.MBulkPaymentsIncomingRecipientsProcessed.Add(recipient);
+                        }
+                        //
                         db.MBulkPaymentsIncoming.Remove(bulk_payment);
                         db.SaveChanges();
                     }
                     else
                     {
+                        //if failed the bulkpayment says inside the inbox, the service will try again 
                         var error = new MErrors() { Date = DateTime.Now, Data1 = source + ".RunTask   failed to upload bulk payment to rbz", Data2 = (string)response.msg };
                         db.MErrors.Add(error);
                         db.SaveChanges();

@@ -192,7 +192,25 @@ namespace PayGuardAdmin.Controllers
             return RedirectToAction("AllCompanies");
         }
 
-
+        [HttpPost("ResetCompanyPasswordDefaultUser")]
+        public IActionResult ResetCompanyPasswordDefaultUser(int company_id)
+        {
+            try
+            {
+                //var company = db.MCompany.Find(company_id);
+                //db.MCompany.Remove(company);
+                //await db.SaveChangesAsync();
+                //ViewBag.company = company;
+                TempData["msg"] = "Password Reset Successful";
+                TempData["type"] = "success";
+            }
+            catch (Exception ex)
+            {
+                TempData["msg"] = ex.Message;
+                TempData["type"] = "error";
+            }
+            return RedirectToAction("AllCompanies");
+        }
 
     }
 }
