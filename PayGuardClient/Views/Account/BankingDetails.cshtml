@@ -1,0 +1,89 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    var bank = (PayGuardClient.Models.MBank)ViewBag.bank;
+    var company = (PayGuardClient.Models.MCompany)ViewBag.company;
+}
+
+<style>
+    small {
+        color: blue;
+    }
+</style>
+
+<div style="width:60%;margin:auto;">
+    <div class="row">
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" class="form-control" value="@company.CompanyName" readonly>
+                <small>Company Name</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" class="form-control" value="@company.ContactPerson" readonly>
+                <small>Contact Person</small>
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" class="form-control" value="@company.ContactMobile" readonly>
+                <small>Contact Mobile</small>
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" class="form-control" value="@company.ContactEmail" readonly>
+                <small>Contact Email</small>
+            </div>
+        </div>
+
+    </div>
+
+
+
+    <div class="row">
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" class="form-control" value="@company.BankAccountName" readonly>
+                <small>Account Name</small>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" class="form-control" value="@company.BankAccountNumber" readonly>
+                <small>Account Number</small>
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <input type="text" class="form-control" value="@company.BankBranchCode" readonly>
+                <small>BranchCode</small>
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <input type="text" class="form-control" value="@bank.BankName" readonly>
+                <small>Bank</small>
+            </div>
+        </div>
+    </div>
+
+
+</div>

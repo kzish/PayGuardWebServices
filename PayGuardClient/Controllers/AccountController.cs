@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PayGuardClient.Models;
 
 namespace PayGuardClient.Controllers
@@ -41,7 +42,13 @@ namespace PayGuardClient.Controllers
             return View();
         }
 
-
+        /// <summary>
+        /// change my own password
+        /// </summary>
+        /// <param name="old_password"></param>
+        /// <param name="new_password"></param>
+        /// <param name="confirm_password"></param>
+        /// <returns></returns>
         [HttpPost("ChangePassword")]
         public async Task<IActionResult> ChangePassword(string old_password, string new_password, string confirm_password)
         {
@@ -72,6 +79,26 @@ namespace PayGuardClient.Controllers
             }
             return View();
         }
+
+
+
+        [HttpGet("BankingDetails")]
+        public IActionResult BankingDetails()
+        {
+            ViewBag.title= "Banking Details";
+            var user = db.AspNetUsers
+                .Where(i => i.Email == User.Identity.Name)
+                .Include(i=>i.MUsers)
+                .FirstOrDefault();
+            var company = db.MCompany.Find(user.MUsers.CompanyId);
+            var bank = db.MBank.Where(i => i.Id == company.EBankCode).FirstOrDefault();
+
+            ViewBag.bank = bank;
+            ViewBag.company = company;
+
+            return View();
+        }
+
 
 
     }

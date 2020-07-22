@@ -1,4 +1,8 @@
-﻿.black
+﻿small {
+color:blue;
+}
+
+.black
 {
     color:black!important;
 }
