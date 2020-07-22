@@ -26,6 +26,7 @@ namespace PayGuardAdmin.Models
         public virtual DbSet<MBulkPayments> MBulkPayments { get; set; }
         public virtual DbSet<MBulkPaymentsRecipients> MBulkPaymentsRecipients { get; set; }
         public virtual DbSet<MCompany> MCompany { get; set; }
+        public virtual DbSet<MErrors> MErrors { get; set; }
         public virtual DbSet<MUsers> MUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -33,7 +34,7 @@ namespace PayGuardAdmin.Models
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("server=localhost;database=payguard;User Id=sa;Password=123abc;");
+                optionsBuilder.UseSqlServer("server=localhost;database=PayGuard;User Id=sa;Password=123abc;");
             }
         }
 
@@ -190,6 +191,10 @@ namespace PayGuardAdmin.Models
                     .HasColumnName("date")
                     .HasColumnType("datetime");
 
+                entity.Property(e => e.DateLastSubmitted)
+                    .HasColumnName("date_last_submitted")
+                    .HasColumnType("datetime");
+
                 entity.Property(e => e.Reference)
                     .IsRequired()
                     .HasColumnName("reference")
@@ -221,7 +226,8 @@ namespace PayGuardAdmin.Models
                 entity.Property(e => e.RecipientAccountNumber)
                     .IsRequired()
                     .HasColumnName("recipient_account_number")
-                    .HasMaxLength(10);
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.RecipientAmount)
                     .HasColumnName("recipient_amount")
@@ -233,10 +239,14 @@ namespace PayGuardAdmin.Models
                     .HasMaxLength(50)
                     .IsUnicode(false);
 
+                entity.HasOne(d => d.BulkPayment)
+                    .WithMany(p => p.MBulkPaymentsRecipients)
+                    .HasForeignKey(d => d.BulkPaymentId)
+                    .HasConstraintName("FK_m_bulk_payments_recipients_m_bulk_payments");
+
                 entity.HasOne(d => d.ERecipientBank)
                     .WithMany(p => p.MBulkPaymentsRecipients)
                     .HasForeignKey(d => d.ERecipientBankId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_m_bulk_payments_recipients_m_bank");
             });
 
@@ -301,6 +311,25 @@ namespace PayGuardAdmin.Models
                     .HasConstraintName("FK_m_company_m_bank");
             });
 
+            modelBuilder.Entity<MErrors>(entity =>
+            {
+                entity.ToTable("m_errors");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Data1)
+                    .HasColumnName("data1")
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Data2)
+                    .HasColumnName("data2")
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Date)
+                    .HasColumnName("date")
+                    .HasColumnType("datetime");
+            });
+
             modelBuilder.Entity<MUsers>(entity =>
             {
                 entity.HasKey(e => e.AspNetUserId);
@@ -312,6 +341,8 @@ namespace PayGuardAdmin.Models
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.CompanyId).HasColumnName("company_id");
+
+                entity.Property(e => e.DefaultUser).HasColumnName("default_user");
 
                 entity.Property(e => e.Name)
                     .IsRequired()

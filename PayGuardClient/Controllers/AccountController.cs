@@ -13,7 +13,7 @@ namespace PayGuardClient.Controllers
     [Authorize]
     public class AccountController : Controller
     {
-        
+
         private readonly SignInManager<IdentityUser> signInManager;
         private readonly UserManager<IdentityUser> userManager;
         private readonly RoleManager<IdentityRole> roleManager;
@@ -32,9 +32,47 @@ namespace PayGuardClient.Controllers
             db.Dispose();
         }
 
-        public IActionResult Index()
+        [HttpGet("ChangePassword")]
+        public IActionResult ChangePassword()
         {
+            ViewBag.title = "Change Password";
+            var user = db.AspNetUsers.Where(i => i.Email == User.Identity.Name).FirstOrDefault();
+            ViewBag.user = user;
             return View();
         }
+
+
+        [HttpPost("ChangePassword")]
+        public async Task<IActionResult> ChangePassword(string old_password, string new_password, string confirm_password)
+        {
+            try
+            {
+                ViewBag.title = "Change Password";
+                var id_user = await userManager.GetUserAsync(HttpContext.User);
+                var result = await userManager.ChangePasswordAsync(id_user, old_password, new_password);
+                if (result.Succeeded)
+                {
+                    var user = db.AspNetUsers.Where(i => i.Email == User.Identity.Name).FirstOrDefault();
+                    ViewBag.user = user;
+                    TempData["msg"] = "Password changed. Login to continue"; ;
+                    TempData["type"] = "success";
+                    await signInManager.SignOutAsync();
+                    return RedirectToAction("Login", "Auth");
+                }
+                else
+                {
+                    TempData["msg"] = String.Join(" ",result.Errors.Select(i=>i.Description).ToList());
+                    TempData["type"] = "error";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["msg"] = ex.Message;
+                TempData["type"] = "error";
+            }
+            return View();
+        }
+
+
     }
 }

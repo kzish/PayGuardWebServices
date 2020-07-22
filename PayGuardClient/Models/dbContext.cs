@@ -242,13 +242,11 @@ namespace PayGuardClient.Models
                 entity.HasOne(d => d.BulkPayment)
                     .WithMany(p => p.MBulkPaymentsRecipients)
                     .HasForeignKey(d => d.BulkPaymentId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_m_bulk_payments_recipients_m_bulk_payments");
 
                 entity.HasOne(d => d.ERecipientBank)
                     .WithMany(p => p.MBulkPaymentsRecipients)
                     .HasForeignKey(d => d.ERecipientBankId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_m_bulk_payments_recipients_m_bank");
             });
 
@@ -343,6 +341,8 @@ namespace PayGuardClient.Models
                     .ValueGeneratedNever();
 
                 entity.Property(e => e.CompanyId).HasColumnName("company_id");
+
+                entity.Property(e => e.DefaultUser).HasColumnName("default_user");
 
                 entity.Property(e => e.Name)
                     .IsRequired()
