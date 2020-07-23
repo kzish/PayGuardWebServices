@@ -1,0 +1,114 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    var user = (PayGuardClient.Models.AspNetUsers)ViewBag.user;
+    var roles = (PayGuard.Models.UserRoles)ViewBag.roles;
+}
+
+<form action="~/Users/EditUser" method="post">
+    <input type="hidden" value="@user.Id" name="asp_net_user_id"/>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Edit User</h2>
+
+                <div class="form-group">
+                    <input type="text" class="form-control" name="name" required value="@user.MUsers.Name">
+                    <small class="form-text text-muted"><span style="color:red;">*</span>Name</small>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="surname" required value="@user.MUsers.Surname">
+                    <small class="form-text text-muted"><span style="color:red;">*</span>Surname</small>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="" required value="@user.Email" readonly>
+                    <small class="form-text text-muted"><span style="color:red;">*</span>Email</small>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <h2>User Roles</h2>
+                <br />
+                <br />
+                <table id="dt,_" class="table tblsm">
+
+                    <tbody>
+                        <tr>
+                            <td>BulkPayments</td>
+                            <td>
+                                <input type="checkbox" name="bulk_payments" value="true" checked="@(roles.bulk_payments)" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>DebitOrders</td>
+                            <td>
+                                <input type="checkbox" name="debit_orders" value="true" checked="@(roles.debit_orders)"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>ManageUsers</td>
+                            <td>
+                                <input type="checkbox" name="manage_users" value="true" checked="@(roles.manage_users)" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <button type="button" onclick="confirm_password_reset();" class="btn btn-danger">Reset Password</button>
+    </div>
+</form>
+
+
+<form action="~/Users/ResetPasswordForUser" method="post" id="f1">
+    <input type="hidden" value="@user.Id" id="asp_net_user_id" name="asp_net_user_id"/>
+</form>
+
+<script>
+    $.ajax({
+        method:'get',
+        url: "@(Url.Content("~/BulkPayments/ajaxallBanks"))",
+        success: function (data) {
+            $("#loader").hide();
+            $("#data").html(data);
+        },
+        error: function () {
+            alert('Failed to load banks');
+            $("#loader").hide();
+        },
+    });
+</script>
+
+
+<script>
+    $('#dt_').DataTable({
+        select: true,
+        responsive: true,
+        dom: 'lBfrtip',
+        buttons: [
+            'copyHtml5',
+            'excelHtml5',
+            'csvHtml5',
+            'pdfHtml5'
+        ]
+    });
+</script>
+
+<script>
+    function confirm_password_reset() {
+        $.confirm({
+            title: 'Information',
+            type: "red",
+            content: 'Reset Password? New Password: Softrite#99',
+            buttons: {
+                Yes: function () {
+                    $("#f1").submit();
+                },
+                No: function () {
+                },
+
+            }
+        });
+
+    }
+</script>

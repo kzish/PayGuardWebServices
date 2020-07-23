@@ -16,7 +16,7 @@ using PayGuardClient.Models;
 namespace PayGuardClient.Controllers
 {
     [Route("BulkPayments")]
-    [Authorize]
+    [Authorize(Roles ="default_user,bulk_payments")]
     public class BulkPaymentsController : Controller
     {
 

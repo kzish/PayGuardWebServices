@@ -1,0 +1,100 @@
+﻿@{
+    var users = (List<PayGuardClient.Models.MUsers>)ViewBag.users;
+}
+<style>
+    @*style the drop down select entries - datatables*@
+    .custom-select
+    {
+        height:30px!important;
+        width:50px!important;
+        margin-left:5px!important;
+    }
+    @*style the copy buttons- datatables*@
+    .dt-buttons
+    {
+        margin-left:4px!important;
+    }
+</style>
+
+
+
+<table id="dt_" class="table tblsm">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Surname</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in users)
+        {
+            <tr>
+                <td title="@item.Name">@item.Name</td>
+                <td title="@item.Surname">@item.Surname</td>
+                @if (!item.DefaultUser)
+                {
+                    <td>
+                        <a href="~/Users/EditUser/@item.AspNetUserId" style="color:blue;">
+                            Open
+                        </a>
+                        |
+                        <a href="javascript:void(0);" onclick="confirm_delete('@item.AspNetUserId');" style="color:red;">
+                            Delete
+                        </a>
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        <a href="javascript:void(0);" style="color:purple;">
+                            Default user
+                        </a>
+                    </td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>
+
+
+
+<form id="delete_user_form" action="~/Users/DeleteUser" method="post">
+    <input type="hidden" value="" name="asp_net_user_id" id="asp_net_user_id" />
+</form>
+
+<script>
+    $('#dt_').DataTable({
+        select: true,
+        responsive: true,
+        dom: 'lBfrtip',
+        buttons: [
+            'copyHtml5',
+            'excelHtml5',
+            'csvHtml5',
+            'pdfHtml5'
+        ]
+    });
+</script>
+
+
+<script>
+
+    function confirm_delete(id) {
+        $.confirm({
+            title: 'Information',
+            type: "red",
+            content: 'Delete this user?',
+            buttons: {
+                Yes: function () {
+                    $("#asp_net_user_id").val(id);
+                    $("#delete_user_form").submit();
+                },
+                No: function () {
+                },
+
+            }
+        });
+
+    }
+</script>

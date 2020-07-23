@@ -1,0 +1,64 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <form action="~/Users/CreateUser" method="post" style="width:80%;margin:auto;">
+                <h2>Create User</h2>
+
+                <div class="form-group">
+                    <input type="text" class="form-control" name="Name" required value="@ViewBag.name">
+                    <small class="form-text text-muted"><span style="color:red;">*</span>Name</small>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="Surname" required value="@ViewBag.surname">
+                    <small class="form-text text-muted"><span style="color:red;">*</span>Surname</small>
+                </div>
+
+                <div class="form-group">
+                    <input type="email" class="form-control" name="LoginEmail" required value="@ViewBag.login_email">
+                    <small class="form-text text-muted"><span style="color:red;">*</span>Login Email</small>
+                </div>
+
+                <div class="form-group">
+                    <input type="text" class="form-control" name="LoginPassword" required value="@(ViewBag.login_password==null?"Softrite#99":ViewBag.login_password)" />
+                    <small class="form-text text-muted"><span style="color:red;">*</span>Login Password</small>
+                </div>
+
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+
+
+        </div>
+    </div>
+
+
+</div>
+
+
+<script>
+    $.ajax({
+        method:'get',
+        url: "@(Url.Content("~/BulkPayments/ajaxallBanks"))",
+        success: function (data) {
+            $("#loader").hide();
+            $("#data").html(data);
+        },
+        error: function () {
+            alert('Failed to load banks');
+            $("#loader").hide();
+        },
+    });
+</script>
+
+<script>
+    function OpenBanksModal() {
+        $("#all_banks_modal").modal("show");
+    }
+</script>
+
