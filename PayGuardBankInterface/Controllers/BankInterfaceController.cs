@@ -186,6 +186,40 @@ namespace PayGuardBankInterface.Controllers
                 });
             }
         }
+
+
+        /// <summary>
+        /// view the errors 
+        /// bulk payments errors
+        /// </summary>
+        /// <param name="sender_account">the account of the sender</param>
+        /// <returns></returns>
+        [HttpGet("ViewBulkPaymentErrors")]
+        public JsonResult ViewBulkPaymentErrors(string sender_account)
+        {
+            try
+            {
+                var errors = db.MAccountCreditInstructionsFailed//failed transactions
+                    .Where(i => i.SenderAccountNumber == sender_account)//sender account
+                    .ToList();
+
+                return Json(new
+                {
+                    res = "ok",
+                    data = errors
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    res = "err",
+                    msg = ex.Message
+                });
+            }
+        }
+
+
     }
 
 }

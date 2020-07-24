@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using PayGuard.Models;
 using PayGuardRbzInterface.Models;
 using PayGuardRbzInterface.Services;
@@ -114,7 +116,7 @@ namespace PayGuardRbzInterface.Controllers
                 DebitSuspenseAccount(bulk_payment.BankCode, total_recipient_amount);
                 //credit each recipient bank
                 var banks = db.MBank.ToList();
-                foreach( var bank in banks)
+                foreach (var bank in banks)
                 {
                     var total_amount_to_credit_for_this_bank = bulk_payment
                         .MBulkPaymentsIncomingRecipients
@@ -143,6 +145,73 @@ namespace PayGuardRbzInterface.Controllers
             }
         }
 
+
+
+        /// <summary>
+        /// view the errors 
+        /// bulk payments errors
+        /// route the request to the specified bank
+        /// </summary>
+        /// <param name="sender_account">the account of the sender</param>
+        /// <returns></returns>
+        [HttpGet("ViewBulkPaymentErrors")]
+        public async Task<JsonResult> ViewBulkPaymentErrors(string bank_swift_code, string sender_account)
+        {
+            try
+            {
+
+                var bank = db.MBank
+                    .Where(i => i.SwiftCode == bank_swift_code)//the selected bank
+                    .FirstOrDefault();
+
+                var http_client = new HttpClient(Globals.GetHttpHandler());
+                var access_token = Globals.GetAccessToken(bank.EndPoint);
+                if (string.IsNullOrEmpty(access_token))
+                {
+                    return Json(new
+                    {
+                        res = "err",
+                        msg = "failed to get accesss token"
+                    });
+                }
+
+                http_client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
+                var request_errors = await http_client
+                    .GetAsync($"{bank.EndPoint}/PayGuard/v1/ViewBulkPaymentErrors?sender_account={sender_account}")
+                    .Result
+                    .Content
+                    .ReadAsStringAsync()
+                    ;
+
+                dynamic request_errors_json = JsonConvert.DeserializeObject(request_errors);
+                if (request_errors_json.res == "ok")
+                {
+                    return Json(new
+                    {
+                        res = "ok",
+                        data = request_errors_json.data
+                    });
+                }
+                else
+                {
+                    return Json(new
+                    {
+                        res = "err",
+                        msg = request_errors
+                    });
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    res = "err",
+                    msg = ex.Message
+                });
+            }
+        }
 
     }
 }

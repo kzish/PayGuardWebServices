@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting.Internal;
@@ -11,12 +12,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PayGuardClient.Models;
 
 namespace PayGuardClient.Controllers
 {
     [Route("BulkPayments")]
-    [Authorize(Roles ="default_user,bulk_payments")]
+    [Authorize(Roles = "default_user,bulk_payments")]
     public class BulkPaymentsController : Controller
     {
 
@@ -69,7 +71,7 @@ namespace PayGuardClient.Controllers
         public IActionResult ajaxAllBanks()
         {
             //only banks online
-            var banks = db.MBank.Where(i=>i.Online).ToList();
+            var banks = db.MBank.Where(i => i.Online).ToList();
             ViewBag.banks = banks;
             return View();
         }
@@ -149,7 +151,7 @@ namespace PayGuardClient.Controllers
                         //ensure bank is online
                         var is_bank_online = db.MBank.Where(i => i.Online && i.Id == ERecipientBankId).Any();
                         bulk_payment_recipient.ERecipientBankId = ERecipientBankId;
-                        if (ERecipientBankId==0||!is_bank_online)
+                        if (ERecipientBankId == 0 || !is_bank_online)
                         {
                             num_errors++;
                             continue;
@@ -440,6 +442,82 @@ namespace PayGuardClient.Controllers
                 db.SaveChanges();
             }
             return RedirectToAction("AllBulkPayments");
+        }
+
+        /// <summary>
+        /// view the errors of the bulk payments
+        /// </summary>
+        /// <param name="bank_swift_code"></param>
+        /// <returns></returns>
+        [HttpGet("ViewErrors/{bank_swift_code}")]
+        public IActionResult ViewErrors(string bank_swift_code)
+        {
+            ViewBag.title = "View Errors";
+            ViewBag.bank_swift_code = bank_swift_code;
+            return View();
+        }
+
+        [HttpGet("ajaxViewErrors/{bank_swift_code}")]
+        public async Task<IActionResult> ajaxViewErrors(string bank_swift_code)
+        {
+            try
+            {
+                //
+                var asp_net_user = db.AspNetUsers
+                    .Include(i => i.MUsers)
+                    .Where(i => i.Email == User.Identity.Name)
+                    .FirstOrDefault()
+                    ;
+                //
+                var company = db.MCompany.Find(asp_net_user.MUsers.CompanyId);
+                var http_client = new HttpClient(Globals.GetHttpHandler());
+                var access_token = Globals.GetAccessToken(Globals.rbz_end_point);
+                //
+                if (string.IsNullOrEmpty(access_token))
+                {
+                    TempData["msg"] = "Failed to fetch access token";
+                    TempData["type"] = "error";
+                    return View();
+                }
+                //
+                http_client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
+                var request_errors = await http_client.GetAsync($"{Globals.rbz_end_point}/PayGuard/v1/ViewBulkPaymentErrors?bank_swift_code={bank_swift_code}&sender_account={company.BankAccountNumber}")
+                    .Result
+                    .Content
+                    .ReadAsStringAsync();
+                //
+                dynamic request_errors_json = JsonConvert.DeserializeObject(request_errors);
+                var errors = new List<PayGuard.Models.MAccountCreditInstructionsFailed>();
+                if (request_errors_json.res == "ok")
+                {
+                    foreach (var item in request_errors_json.data)
+                    {
+                        var error = new PayGuard.Models.MAccountCreditInstructionsFailed();
+                        error.Date = item.date;
+                        error.RecipientBankCode = item.recipientBankCode;
+                        error.RecipientAccountNumber = item.recipientAccountNumber;
+                        error.SenderBankCode = item.senderBankCode;
+                        error.SenderAccountNumber = item.senderAccountNumber;
+                        error.Amount = item.amount;
+                        error.Reference = item.reference;
+                        errors.Add(error);
+                    }
+                    ViewBag.errors = errors;
+                }
+                else
+                {
+                    TempData["msg"] = "Failed to fetch access token";
+                    TempData["type"] = "error";
+                    ViewBag.errors = request_errors;
+                }
+                //MAccountCreditInstructionsFailed
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex);
+            }
+
+            return View();
         }
 
     }
