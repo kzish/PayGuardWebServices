@@ -20,12 +20,12 @@ namespace PayGuardRbzInterface.Controllers
 
     [Route("PayGuard/v1")]
     [Authorize(AuthenticationSchemes = "Bearer")]//allow only authorized by Bearer
-    public class BankInterfaceController : Controller
+    public class BulkPayments : Controller
     {
 
         private readonly ITimerBulkPaymentsForwardingToRecipientBanks sTimerBulkPaymentsForwardingToRecipientBanks;
         //start the service
-        public BankInterfaceController(ITimerBulkPaymentsForwardingToRecipientBanks sTimerBulkPaymentsForwardingToRecipientBanks)
+        public BulkPayments(ITimerBulkPaymentsForwardingToRecipientBanks sTimerBulkPaymentsForwardingToRecipientBanks)
         {
             this.sTimerBulkPaymentsForwardingToRecipientBanks = sTimerBulkPaymentsForwardingToRecipientBanks;
         }
@@ -40,47 +40,6 @@ namespace PayGuardRbzInterface.Controllers
         }
 
 
-        /// <summary>
-        /// debit the banks suspense account
-        /// </summary>
-        /// <param name="account_number"></param>
-        /// <param name="amount"></param>
-        /// <returns></returns>
-        private bool DebitSuspenseAccount(string suspense_account_number, decimal amount)
-        {
-            try
-            {
-                return true;
-            }
-            catch (Exception ex)
-            {
-                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
-                db.MErrors.Add(error);
-                db.SaveChanges();
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// credit the banks suspense account
-        /// </summary>
-        /// <param name="account_number"></param>
-        /// <param name="amount"></param>
-        /// <returns></returns>
-        private bool CreditSuspenseAccount(string suspense_account_number, decimal amount)
-        {
-            try
-            {
-                return true;
-            }
-            catch (Exception ex)
-            {
-                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
-                db.MErrors.Add(error);
-                db.SaveChanges();
-                return false;
-            }
-        }
 
         /// <summary>
         /// gamuchira bulk payment from the client bank 
@@ -103,7 +62,7 @@ namespace PayGuardRbzInterface.Controllers
                     payment_instruction.RecipientBankCode = item.RecipientBankSwiftCode;
                     payment_instruction.RecipientAccountNumber = item.RecipientAccountNumber;
                     payment_instruction.SenderBankCode = bulk_payment.BankCode;//swift code
-                    payment_instruction.SenderAccountNumber = item.RecipientAccountNumber;
+                    payment_instruction.SenderAccountNumber = bulk_payment.AccountNumber;
                     payment_instruction.Amount = item.RecipientAmount;
                     payment_instruction.Reference = bulk_payment.Reference;
                     db.MAccountCreditInstructions.Add(payment_instruction);
@@ -113,7 +72,7 @@ namespace PayGuardRbzInterface.Controllers
                 //debit the suspense account
                 //transaction fee stays with the payers bank, it is not debited from the suspense account
                 decimal total_recipient_amount = bulk_payment.MBulkPaymentsIncomingRecipients.Sum(i => i.RecipientAmount);
-                DebitSuspenseAccount(bulk_payment.BankCode, total_recipient_amount);
+                Globals.DebitSuspenseAccount(bulk_payment.BankCode, total_recipient_amount);
                 //credit each recipient bank
                 var banks = db.MBank.ToList();
                 foreach (var bank in banks)
@@ -123,7 +82,7 @@ namespace PayGuardRbzInterface.Controllers
                         .Where(i => i.RecipientBankSwiftCode == bank.SwiftCode)
                         .Sum(i => i.RecipientAmount);
                     //
-                    CreditSuspenseAccount(bank.SwiftCode, total_amount_to_credit_for_this_bank);
+                    Globals.CreditSuspenseAccount(bank.SwiftCode, total_amount_to_credit_for_this_bank);
                 }
                 //
                 return Json(new

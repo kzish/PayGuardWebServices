@@ -3,6 +3,11 @@ using System.Collections.Generic;
 
 namespace PayGuard.Models
 {
+
+    /// <summary>
+    /// model of bulk payment sent from bulkpayer bank
+    /// roshandiswa paku gamuchira bulkpayment from bulkpayers bank
+    /// </summary>
     public partial class MBulkPaymentsIncoming
     {
         public MBulkPaymentsIncoming()

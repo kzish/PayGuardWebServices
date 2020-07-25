@@ -52,3 +52,11 @@ C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\PayGuardClient.genruntimeconfig.cache
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\PayGuardClient.csproj.CopyComplete
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\PayGuardClient.csprojAssemblyReference.cache
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\Razor\Views\DebitOrders\ajaxAllBanks.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\Razor\Views\DebitOrders\ajaxAllDebitOrderClients.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\Razor\Views\DebitOrders\ajaxViewErrors.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\Razor\Views\DebitOrders\AllDebitOrders.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\Razor\Views\DebitOrders\CreateDebitOrders.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\Razor\Views\DebitOrders\EditDebitOrders.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\Razor\Views\DebitOrders\ViewErrors.cshtml.g.cs
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardClient\obj\Debug\netcoreapp2.2\Razor\Views\DebitOrders\ajaxAllDebitOrders.cshtml.g.cs

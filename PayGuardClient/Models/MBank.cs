@@ -9,6 +9,7 @@ namespace PayGuardClient.Models
         {
             MBulkPaymentsRecipients = new HashSet<MBulkPaymentsRecipients>();
             MCompany = new HashSet<MCompany>();
+            MDebitOrdersClients = new HashSet<MDebitOrdersClients>();
         }
 
         public int Id { get; set; }
@@ -19,5 +20,6 @@ namespace PayGuardClient.Models
 
         public virtual ICollection<MBulkPaymentsRecipients> MBulkPaymentsRecipients { get; set; }
         public virtual ICollection<MCompany> MCompany { get; set; }
+        public virtual ICollection<MDebitOrdersClients> MDebitOrdersClients { get; set; }
     }
 }

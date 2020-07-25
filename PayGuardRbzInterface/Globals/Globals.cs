@@ -68,4 +68,59 @@ public class Globals
         }
     }
 
+
+
+    /// <summary>
+    /// debit the banks suspense account
+    /// </summary>
+    /// <param name="account_number"></param>
+    /// <param name="amount"></param>
+    /// <returns></returns>
+    public static bool DebitSuspenseAccount(string suspense_account_number, decimal amount)
+    {
+        try
+        {
+            return true;
+        }
+        catch (Exception ex)
+        {
+            using (var db = new dbContext())
+            {
+                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
+                db.MErrors.Add(error);
+                db.SaveChanges();
+                db.Dispose();
+            }
+            return false;
+        }
+    }
+
+
+
+    /// <summary>
+    /// credit the banks suspense account
+    /// </summary>
+    /// <param name="account_number"></param>
+    /// <param name="amount"></param>
+    /// <returns></returns>
+    public static bool CreditSuspenseAccount(string suspense_account_number, decimal amount)
+    {
+        try
+        {
+            return true;
+        }
+        catch (Exception ex)
+        {
+            using (var db = new dbContext())
+            {
+                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
+                db.MErrors.Add(error);
+                db.SaveChanges();
+                db.Dispose();
+            }
+            return false;
+        }
+    }
+
+
 }

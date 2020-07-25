@@ -8,6 +8,7 @@ namespace PayGuardClient.Models
         public MCompany()
         {
             MBulkPayments = new HashSet<MBulkPayments>();
+            MDebitOrders = new HashSet<MDebitOrders>();
             MUsers = new HashSet<MUsers>();
         }
 
@@ -23,6 +24,7 @@ namespace PayGuardClient.Models
 
         public virtual MBank EBankCodeNavigation { get; set; }
         public virtual ICollection<MBulkPayments> MBulkPayments { get; set; }
+        public virtual ICollection<MDebitOrders> MDebitOrders { get; set; }
         public virtual ICollection<MUsers> MUsers { get; set; }
     }
 }

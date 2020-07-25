@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace PayGuard.Models
 {
+    /// <summary>
+    /// model of the bulk payment to be sent to the bank
+    /// this model contains the AccountNumber and BankCode
+    /// </summary>
     public class MBulkPayments
     {
         public MBulkPayments()

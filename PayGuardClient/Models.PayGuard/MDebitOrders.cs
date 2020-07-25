@@ -3,11 +3,14 @@ using System.Collections.Generic;
 
 namespace PayGuard.Models
 {
-    public class MBulkPayments
+    /// <summary>
+    /// model of a debit order to be sent to rbz
+    /// </summary>
+    public partial class MDebitOrders
     {
-        public MBulkPayments()
+        public MDebitOrders()
         {
-            MBulkPaymentsRecipients = new HashSet<MBulkPaymentsRecipients>();
+            MDebitOrdersClients = new HashSet<MDebitOrdersClients>();
         }
 
         public int Id { get; set; }
@@ -17,6 +20,8 @@ namespace PayGuard.Models
         public string AspNetUserId { get; set; }
         public DateTime? DateLastSubmitted { get; set; }
         public string AccountNumber { get; set; }
-        public virtual ICollection<MBulkPaymentsRecipients> MBulkPaymentsRecipients { get; set; }
+        public string BankCode { get; set; }
+
+        public virtual ICollection<MDebitOrdersClients> MDebitOrdersClients { get; set; }
     }
 }

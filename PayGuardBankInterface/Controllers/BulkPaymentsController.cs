@@ -18,7 +18,7 @@ namespace PayGuardBankInterface.Controllers
 
     [Route("PayGuard/v1")]
     [Authorize(AuthenticationSchemes = "Bearer")]//allow only authorized by Bearer
-    public class BankInterfaceController : Controller
+    public class BulkPaymentsController : Controller
     {
         private dbContext db = new dbContext();
 
@@ -26,7 +26,7 @@ namespace PayGuardBankInterface.Controllers
         private readonly ITimerTimerBulkPaymentsForwardingToRbz ITimerTimerBulkPaymentsForwardingToRbz;
         private readonly ITimerTimerProcessPaymentInstructions ITimerTimerProcessPaymentInstructions;
         //
-        public BankInterfaceController(ITimerTimerBulkPaymentsForwardingToRbz ITimerTimerBulkPaymentsForwardingToRbz, ITimerTimerProcessPaymentInstructions ITimerTimerProcessPaymentInstructions)
+        public BulkPaymentsController(ITimerTimerBulkPaymentsForwardingToRbz ITimerTimerBulkPaymentsForwardingToRbz, ITimerTimerProcessPaymentInstructions ITimerTimerProcessPaymentInstructions)
         {
             this.ITimerTimerBulkPaymentsForwardingToRbz = ITimerTimerBulkPaymentsForwardingToRbz;
             this.ITimerTimerProcessPaymentInstructions = ITimerTimerProcessPaymentInstructions;

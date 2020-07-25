@@ -1,0 +1,130 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+    var debit_order = (PayGuardClient.Models.MDebitOrders)ViewBag.debit_order;
+}
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+
+            <form action="~/DebitOrders/EditDebitOrders" enctype="multipart/form-data" method="post" style="width:80%;margin:auto;">
+                <h2>Edit DebitOrder</h2>
+                <input type="hidden" value="@debit_order.Id" name="Id" />
+                <div class="form-group">
+                    <input type="text" class="form-control" name="reference" required value="@debit_order.Reference">
+                    <small class="form-text text-muted"><span style="color:red;">*</span>Reference</small>
+                </div>
+                <div class="form-group">
+                    <input type="file" class="form-control" name="file" accept=".csv" />
+                    <small class="form-text text-muted">Bulk File <span style="color:red;">Uploading a file will overwrite existing records</span></small>
+                </div>
+                @if (debit_order.DateLastSubmitted == null)
+                {
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                }
+                else
+                {
+                    <button type="button" class="btn btn-default">Submitted</button>
+                }
+                <small class="form-text text-muted"><span style="color:red;">1 - Download DebitOrders File</span> <a href="~/Raw/DebitOrders.csv" download="DebitOrders.csv">DebitOrders.csv</a></small>
+                <small class="form-text text-muted"><span style="color:red;">2 - Enter Clients</span></small>
+                <small class="form-text text-muted"><span style="color:red;">3 - Upload DebitOrder file</span></small>
+
+                <br />
+                <br />
+                <br />
+                <a href="javascript:void(0);" onclick="OpenBanksModal(); return false;">Click here to show <b>Bank Codes</b></a>
+                <br />
+                @ViewBag.errors
+                <br />
+            </form>
+
+
+        </div>
+    </div>
+
+
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <div style="width:80%;margin:auto;" id="recipients">
+                <center id="loader_recipient">
+                    <img src="~/assets/img/_loading.gif" />
+                </center>
+            </div>
+           
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
+@* Modal *@
+<div class="modal fade" id="all_banks_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Bank Codes</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12" id="data">
+
+                        <center id="loader">
+                            <img src="~/assets/img/_loading.gif" />
+                        </center>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    $.ajax({
+        method:'get',
+        url: "@(Url.Content("~/DebitOrders/ajaxallBanks"))",
+        success: function (data) {
+            $("#loader").hide();
+            $("#data").html(data);
+        },
+        error: function () {
+            alert('Failed to load banks');
+            $("#loader").hide();
+        },
+    });
+</script>
+
+<script>
+    $.ajax({
+        method:'get',
+        url: "@(Url.Content("~/DebitOrders/ajaxAllDebitOrderClients/"))@debit_order.Id",
+        success: function (data) {
+            $("#loader_recipients").hide();
+            $("#recipients").html(data);
+        },
+        error: function () {
+            alert('Failed to load recipients');
+            $("#loader_recipients").hide();
+        },
+    });
+</script>
+
+
+<script>
+    function OpenBanksModal() {
+        $("#all_banks_modal").modal("show");
+    }
+</script>
+

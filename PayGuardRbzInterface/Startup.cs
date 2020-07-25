@@ -88,8 +88,9 @@ namespace PayGuardRbzInterface
                 c.AddPolicy("AllowHeader", options => options.AllowAnyHeader());
             });
 
-
-            services.AddSingleton<ITimerBulkPaymentsForwardingToRecipientBanks, sTimerBulkPaymentsForwardingToRecipientBanks>();//add the timer service scheduler as a singleton
+            //singleton services
+            services.AddSingleton<ITimerBulkPaymentsForwardingToRecipientBanks, sTimerBulkPaymentsForwardingToRecipientBanks>();
+            services.AddSingleton<ITimerDebitOrdersForwardingToRecipientBanks, sTimerDebitOrdersForwardingToRecipientBanks>();
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)

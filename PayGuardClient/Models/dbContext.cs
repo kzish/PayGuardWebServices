@@ -26,6 +26,8 @@ namespace PayGuardClient.Models
         public virtual DbSet<MBulkPayments> MBulkPayments { get; set; }
         public virtual DbSet<MBulkPaymentsRecipients> MBulkPaymentsRecipients { get; set; }
         public virtual DbSet<MCompany> MCompany { get; set; }
+        public virtual DbSet<MDebitOrders> MDebitOrders { get; set; }
+        public virtual DbSet<MDebitOrdersClients> MDebitOrdersClients { get; set; }
         public virtual DbSet<MErrors> MErrors { get; set; }
         public virtual DbSet<MUsers> MUsers { get; set; }
 
@@ -203,13 +205,11 @@ namespace PayGuardClient.Models
                 entity.HasOne(d => d.AspNetUser)
                     .WithMany(p => p.MBulkPayments)
                     .HasForeignKey(d => d.AspNetUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_m_bulk_payments_AspNetUsers");
 
                 entity.HasOne(d => d.Company)
                     .WithMany(p => p.MBulkPayments)
                     .HasForeignKey(d => d.CompanyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_m_bulk_payments_m_company");
             });
 
@@ -309,6 +309,92 @@ namespace PayGuardClient.Models
                     .HasForeignKey(d => d.EBankCode)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_m_company_m_bank");
+            });
+
+            modelBuilder.Entity<MDebitOrders>(entity =>
+            {
+                entity.ToTable("m_debit_orders");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.AccountNumber)
+                    .IsRequired()
+                    .HasColumnName("account_number")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.AspNetUserId)
+                    .IsRequired()
+                    .HasColumnName("asp_net_user_id")
+                    .HasMaxLength(450);
+
+                entity.Property(e => e.BankCode)
+                    .IsRequired()
+                    .HasColumnName("bank_code")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.CompanyId).HasColumnName("company_id");
+
+                entity.Property(e => e.Date)
+                    .HasColumnName("date")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.DateLastSubmitted)
+                    .HasColumnName("date_last_submitted")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.Reference)
+                    .IsRequired()
+                    .HasColumnName("reference")
+                    .HasColumnType("text");
+
+                entity.HasOne(d => d.AspNetUser)
+                    .WithMany(p => p.MDebitOrders)
+                    .HasForeignKey(d => d.AspNetUserId)
+                    .HasConstraintName("FK_m_debit_orders_AspNetUsers");
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.MDebitOrders)
+                    .HasForeignKey(d => d.CompanyId)
+                    .HasConstraintName("FK_m_debit_orders_m_company");
+            });
+
+            modelBuilder.Entity<MDebitOrdersClients>(entity =>
+            {
+                entity.ToTable("m_debit_orders_clients");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.ClientAccountNumber)
+                    .IsRequired()
+                    .HasColumnName("client_account_number")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ClientAmount)
+                    .HasColumnName("client_amount")
+                    .HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.ClientName)
+                    .IsRequired()
+                    .HasColumnName("client_name")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.DebitOrderId).HasColumnName("debit_order_id");
+
+                entity.Property(e => e.EClientBankId).HasColumnName("e_client_bank_id");
+
+                entity.HasOne(d => d.DebitOrder)
+                    .WithMany(p => p.MDebitOrdersClients)
+                    .HasForeignKey(d => d.DebitOrderId)
+                    .HasConstraintName("FK_m_debit_orders_clients_m_debit_orders");
+
+                entity.HasOne(d => d.EClientBank)
+                    .WithMany(p => p.MDebitOrdersClients)
+                    .HasForeignKey(d => d.EClientBankId)
+                    .HasConstraintName("FK_m_debit_orders_clients_m_bank");
             });
 
             modelBuilder.Entity<MErrors>(entity =>

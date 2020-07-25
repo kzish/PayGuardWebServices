@@ -47,8 +47,15 @@ namespace PayGuardClient.Controllers
         [HttpGet("ajaxAllBulkPayments")]
         public IActionResult ajaxAllBulkPayments()
         {
+            var user = db.AspNetUsers
+               .Where(i => i.Email == User.Identity.Name)
+               .Include(i => i.MUsers)
+               .FirstOrDefault();
+
             ViewBag.title = "All BulkPayments";
+
             var bulk_payments = db.MBulkPayments
+                .Where(i=>i.CompanyId==user.MUsers.CompanyId)//for this company
                 .Include(i => i.MBulkPaymentsRecipients)
                 .ToList();
             ViewBag.bulk_payments = bulk_payments;
@@ -392,6 +399,8 @@ namespace PayGuardClient.Controllers
                 http_client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
 
                 //construct header of the bulkpayment to be send to rbz
+                //here we use PayGuard.Models.MBulkPayments
+                //convert MBulkPayments to PayGuard.Models.MBulkPayments
                 var bulk_payment_ = new PayGuard.Models.MBulkPayments();
                 bulk_payment_.Id = bulk_payment.Id;
                 bulk_payment_.Date = bulk_payment.Date;

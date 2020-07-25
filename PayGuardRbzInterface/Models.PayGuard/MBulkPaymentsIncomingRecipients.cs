@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace PayGuard.Models
 {
+    /// <summary>
+    /// model of the recipients of a bulk payment
+    /// </summary>
     public partial class MBulkPaymentsIncomingRecipients
     {
         public int Id { get; set; }

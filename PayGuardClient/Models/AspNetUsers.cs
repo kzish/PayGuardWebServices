@@ -12,6 +12,7 @@ namespace PayGuardClient.Models
             AspNetUserRoles = new HashSet<AspNetUserRoles>();
             AspNetUserTokens = new HashSet<AspNetUserTokens>();
             MBulkPayments = new HashSet<MBulkPayments>();
+            MDebitOrders = new HashSet<MDebitOrders>();
         }
 
         public string Id { get; set; }
@@ -36,5 +37,6 @@ namespace PayGuardClient.Models
         public virtual ICollection<AspNetUserRoles> AspNetUserRoles { get; set; }
         public virtual ICollection<AspNetUserTokens> AspNetUserTokens { get; set; }
         public virtual ICollection<MBulkPayments> MBulkPayments { get; set; }
+        public virtual ICollection<MDebitOrders> MDebitOrders { get; set; }
     }
 }

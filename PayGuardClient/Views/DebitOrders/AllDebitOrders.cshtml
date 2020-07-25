@@ -1,0 +1,38 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <a href="~/DebitOrders/CreateDebitOrders/" style="color:blue;">
+                New DebitOrder
+            </a>
+        </div>
+    </div>
+</div>
+<br />
+<div class="container">
+    <div class="row">
+        <div class="col-md-12" id="data">
+            <center id="loader">
+                <img src="~/assets/img/_loading.gif" />
+            </center>
+        </div>
+    </div>
+</div>
+
+<script>
+    $.ajax({
+        url: "@(Url.Content("~/DebitOrders/ajaxAllDebitOrders"))",
+        method: "get",
+        success: function (data) {
+            $("#data").html(data);
+            $("#loader").hide();
+        },
+        error: function () {
+            alert("Error fetching data");
+            $("#loader").hide();
+        },
+    });
+</script>
