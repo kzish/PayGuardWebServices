@@ -20,7 +20,7 @@ namespace PayGuardBankInterface.Services
     /// <summary>
     /// sends the bulk payments to rbz
     /// </summary>
-    public class sTimerBulkPaymentsForwardingToRbz : ITimerTimerBulkPaymentsForwardingToRbz
+    public class sTimerBulkPaymentsForwardingToRbz : ITimerBulkPaymentsForwardingToRbz
     {
 
         private Timer timer;

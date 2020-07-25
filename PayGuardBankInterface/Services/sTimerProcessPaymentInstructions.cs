@@ -20,7 +20,7 @@ namespace PayGuardBankInterface.Services
     /// <summary>
     /// processes payment instructions recieved from rbz
     /// </summary>
-    public class sTimerProcessPaymentInstructions : ITimerTimerProcessPaymentInstructions
+    public class sTimerProcessPaymentInstructions : ITimerProcessPaymentInstructions
     {
 
         private Timer timer;

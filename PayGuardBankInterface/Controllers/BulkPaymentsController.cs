@@ -23,10 +23,10 @@ namespace PayGuardBankInterface.Controllers
         private dbContext db = new dbContext();
 
         //timers
-        private readonly ITimerTimerBulkPaymentsForwardingToRbz ITimerTimerBulkPaymentsForwardingToRbz;
-        private readonly ITimerTimerProcessPaymentInstructions ITimerTimerProcessPaymentInstructions;
+        private readonly ITimerBulkPaymentsForwardingToRbz ITimerTimerBulkPaymentsForwardingToRbz;
+        private readonly ITimerProcessPaymentInstructions ITimerTimerProcessPaymentInstructions;
         //
-        public BulkPaymentsController(ITimerTimerBulkPaymentsForwardingToRbz ITimerTimerBulkPaymentsForwardingToRbz, ITimerTimerProcessPaymentInstructions ITimerTimerProcessPaymentInstructions)
+        public BulkPaymentsController(ITimerBulkPaymentsForwardingToRbz ITimerTimerBulkPaymentsForwardingToRbz, ITimerProcessPaymentInstructions ITimerTimerProcessPaymentInstructions)
         {
             this.ITimerTimerBulkPaymentsForwardingToRbz = ITimerTimerBulkPaymentsForwardingToRbz;
             this.ITimerTimerProcessPaymentInstructions = ITimerTimerProcessPaymentInstructions;

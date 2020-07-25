@@ -23,13 +23,11 @@ namespace PayGuardBankInterface.Controllers
         private dbContext db = new dbContext();
 
         //timers
-        private readonly ITimerTimerBulkPaymentsForwardingToRbz ITimerTimerBulkPaymentsForwardingToRbz;
-        private readonly ITimerTimerProcessPaymentInstructions ITimerTimerProcessPaymentInstructions;
+        private readonly ITimerProcessDebitOrderInstructions sTimerProcessDebitOrderInstructions;
         //
-        public DebitOrdersController(ITimerTimerBulkPaymentsForwardingToRbz ITimerTimerBulkPaymentsForwardingToRbz, ITimerTimerProcessPaymentInstructions ITimerTimerProcessPaymentInstructions)
+        public DebitOrdersController(ITimerProcessDebitOrderInstructions sTimerProcessDebitOrderInstructions)
         {
-            this.ITimerTimerBulkPaymentsForwardingToRbz = ITimerTimerBulkPaymentsForwardingToRbz;
-            this.ITimerTimerProcessPaymentInstructions = ITimerTimerProcessPaymentInstructions;
+            this.sTimerProcessDebitOrderInstructions = sTimerProcessDebitOrderInstructions;
         }
 
         protected override void Dispose(bool disposing)
@@ -37,30 +35,6 @@ namespace PayGuardBankInterface.Controllers
             base.Dispose(disposing);
             db.Dispose();
         }
-
-        /// <summary>
-        /// return the available funds in the given account
-        /// </summary>
-        /// <param name="account_number"></param>
-        /// <param name="amount"></param>
-        /// <returns></returns>
-        //[HttpGet("GetAccountBalance")]
-        private decimal GetAccountBalance(string account_number)
-        {
-            try
-            {
-                return 45000;
-            }
-            catch (Exception ex)
-            {
-                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
-                db.MErrors.Add(error);
-                db.SaveChanges();
-                return 0;
-            }
-        }
-
-
 
         /// <summary>
         /// gamuchira list of debit order instructions from rbz
@@ -99,38 +73,6 @@ namespace PayGuardBankInterface.Controllers
                 var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
                 db.MErrors.Add(error);
                 db.SaveChanges();
-                return Json(new
-                {
-                    res = "err",
-                    msg = ex.Message
-                });
-            }
-        }
-
-
-        /// <summary>
-        /// view the errors 
-        /// bulk payments errors
-        /// </summary>
-        /// <param name="sender_account">the account of the sender</param>
-        /// <returns></returns>
-        [HttpGet("ViewBulkPaymentErrors")]
-        public JsonResult ViewBulkPaymentErrors(string sender_account)
-        {
-            try
-            {
-                var errors = db.MAccountCreditInstructionsFailed//failed transactions
-                    .Where(i => i.SenderAccountNumber == sender_account)//sender account
-                    .ToList();
-
-                return Json(new
-                {
-                    res = "ok",
-                    data = errors
-                });
-            }
-            catch (Exception ex)
-            {
                 return Json(new
                 {
                     res = "err",
