@@ -509,8 +509,8 @@ namespace PayGuardClient.Controllers
                     {
                         var error = new PayGuard.Models.MAccountDebitInstructionsFailed();
                         error.Date = item.date;
-                        error.ClientBankCode = item.ClientBankCode;
-                        error.ClientAccountNumber = item.ClientAccountNumber;
+                        error.ClientBankCode = item.clientBankCode;
+                        error.ClientAccountNumber = item.clientAccountNumber;
                         error.SenderBankCode = item.senderBankCode;
                         error.SenderAccountNumber = item.senderAccountNumber;
                         error.Amount = item.amount;
