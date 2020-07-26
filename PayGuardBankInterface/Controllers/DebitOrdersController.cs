@@ -24,10 +24,12 @@ namespace PayGuardBankInterface.Controllers
 
         //timers
         private readonly ITimerProcessDebitOrderInstructions sTimerProcessDebitOrderInstructions;
+        private readonly ITimerReturnProcessedDebitOrdersToRbz sTimerReturnProcessedDebitOrdersToRbz;
         //
-        public DebitOrdersController(ITimerProcessDebitOrderInstructions sTimerProcessDebitOrderInstructions)
+        public DebitOrdersController(ITimerProcessDebitOrderInstructions sTimerProcessDebitOrderInstructions, ITimerReturnProcessedDebitOrdersToRbz sTimerReturnProcessedDebitOrdersToRbz)
         {
             this.sTimerProcessDebitOrderInstructions = sTimerProcessDebitOrderInstructions;
+            this.sTimerReturnProcessedDebitOrdersToRbz = sTimerReturnProcessedDebitOrdersToRbz;
         }
 
         protected override void Dispose(bool disposing)

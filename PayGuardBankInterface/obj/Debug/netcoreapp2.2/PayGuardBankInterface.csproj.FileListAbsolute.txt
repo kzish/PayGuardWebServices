@@ -8,7 +8,6 @@ C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInt
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInterface\bin\Debug\netcoreapp2.2\PayGuardBankInterface.pdb
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInterface\bin\Debug\netcoreapp2.2\PayGuardBankInterface.Views.dll
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInterface\bin\Debug\netcoreapp2.2\PayGuardBankInterface.Views.pdb
-C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInterface\obj\Debug\netcoreapp2.2\PayGuardBankInterface.csprojAssemblyReference.cache
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInterface\obj\Debug\netcoreapp2.2\PayGuardBankInterface.AssemblyInfoInputs.cache
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInterface\obj\Debug\netcoreapp2.2\PayGuardBankInterface.AssemblyInfo.cs
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInterface\obj\Debug\netcoreapp2.2\PayGuardBankInterface.csproj.CoreCompileInputs.cache
@@ -32,3 +31,4 @@ C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInt
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInterface\obj\Debug\netcoreapp2.2\PayGuardBankInterface.pdb
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInterface\obj\Debug\netcoreapp2.2\PayGuardBankInterface.genruntimeconfig.cache
 C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInterface\obj\Debug\netcoreapp2.2\PayGuardBankInterface.csproj.CopyComplete
+C:\Users\Softrite\Documents\Visual Studio 2019\projects\PayGuard\PayGuardBankInterface\obj\Debug\netcoreapp2.2\PayGuardBankInterface.csprojAssemblyReference.cache

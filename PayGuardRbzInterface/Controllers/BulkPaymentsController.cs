@@ -20,12 +20,12 @@ namespace PayGuardRbzInterface.Controllers
 
     [Route("PayGuard/v1")]
     [Authorize(AuthenticationSchemes = "Bearer")]//allow only authorized by Bearer
-    public class BulkPayments : Controller
+    public class BulkPaymentsController : Controller
     {
 
         private readonly ITimerBulkPaymentsForwardingToRecipientBanks sTimerBulkPaymentsForwardingToRecipientBanks;
         //start the service
-        public BulkPayments(ITimerBulkPaymentsForwardingToRecipientBanks sTimerBulkPaymentsForwardingToRecipientBanks)
+        public BulkPaymentsController(ITimerBulkPaymentsForwardingToRecipientBanks sTimerBulkPaymentsForwardingToRecipientBanks)
         {
             this.sTimerBulkPaymentsForwardingToRecipientBanks = sTimerBulkPaymentsForwardingToRecipientBanks;
         }

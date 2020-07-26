@@ -21,6 +21,7 @@ namespace PayGuardBankInterface.Models
         public virtual DbSet<MAccountDebitInstructions> MAccountDebitInstructions { get; set; }
         public virtual DbSet<MAccountDebitInstructionsFailed> MAccountDebitInstructionsFailed { get; set; }
         public virtual DbSet<MAccountDebitInstructionsProcessed> MAccountDebitInstructionsProcessed { get; set; }
+        public virtual DbSet<MAccountDebitInstructionsSentToRbz> MAccountDebitInstructionsSentToRbz { get; set; }
         public virtual DbSet<MBank> MBank { get; set; }
         public virtual DbSet<MBulkPaymentsIncoming> MBulkPaymentsIncoming { get; set; }
         public virtual DbSet<MBulkPaymentsIncomingProcessed> MBulkPaymentsIncomingProcessed { get; set; }
@@ -254,6 +255,48 @@ namespace PayGuardBankInterface.Models
             modelBuilder.Entity<MAccountDebitInstructionsProcessed>(entity =>
             {
                 entity.ToTable("m_account_debit_instructions_processed");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Amount)
+                    .HasColumnName("amount")
+                    .HasColumnType("decimal(18, 2)");
+
+                entity.Property(e => e.ClientAccountNumber)
+                    .HasColumnName("client_account_number")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.ClientBankCode)
+                    .HasColumnName("client_bank_code")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.Date)
+                    .HasColumnName("date")
+                    .HasColumnType("datetime");
+
+                entity.Property(e => e.Reference)
+                    .IsRequired()
+                    .HasColumnName("reference")
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SenderAccountNumber)
+                    .IsRequired()
+                    .HasColumnName("sender_account_number")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
+                entity.Property(e => e.SenderBankCode)
+                    .IsRequired()
+                    .HasColumnName("sender_bank_code")
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+            });
+
+            modelBuilder.Entity<MAccountDebitInstructionsSentToRbz>(entity =>
+            {
+                entity.ToTable("m_account_debit_instructions_sent_to_rbz");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 

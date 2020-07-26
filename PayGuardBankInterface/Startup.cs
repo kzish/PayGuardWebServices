@@ -92,6 +92,7 @@ namespace PayGuardBankInterface
             services.AddSingleton<ITimerBulkPaymentsForwardingToRbz, sTimerBulkPaymentsForwardingToRbz>();
             services.AddSingleton<ITimerProcessPaymentInstructions, sTimerProcessPaymentInstructions>();
             services.AddSingleton<ITimerProcessDebitOrderInstructions, sTimerProcessDebitOrderInstructions>();
+            services.AddSingleton<ITimerReturnProcessedDebitOrdersToRbz, sTimerReturnProcessedDebitOrdersToRbz>();
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2)

@@ -73,7 +73,7 @@ namespace PayGuardRbzInterface.Controllers
                 return Json(new
                 {
                     res = "ok",
-                    data = "Bulk Payment Submitted"
+                    data = "Debit Order Submitted"
                 });
             }
             catch (Exception ex)
@@ -89,6 +89,60 @@ namespace PayGuardRbzInterface.Controllers
             }
         }
 
+        /// <summary>
+        /// recieves processed debit orders from the debitee bank
+        /// debits the debitee bank suspence account
+        /// credits the debitors suspense account
+        /// recieved debits are converted into payment instructions 
+        /// a service will process the payment instructions
+        /// </summary>
+        /// <param name="debit_orders"></param>
+        /// <returns></returns>
+        [HttpPost("UploadProcessedDebitOrders")]
+        public async Task<JsonResult> UploadProcessedDebitOrders([FromBody] List<MAccountDebitInstructionsProcessed> processed_debit_orders)
+        {
+            try
+            {
+                //create debit instructions for each bankcode and store into db
+                foreach (var item in processed_debit_orders)
+                {
+                    var payment_instuction = new MAccountCreditInstructions();
+                    payment_instuction.Date = DateTime.Now;
+                    payment_instuction.RecipientBankCode = item.SenderBankCode;//the original sender is now the reciver
+                    payment_instuction.RecipientAccountNumber = item.SenderAccountNumber;//original sender is now the reciever
+                    payment_instuction.SenderBankCode = item.ClientBankCode;//reciever is now the sender
+                    payment_instuction.SenderAccountNumber = item.ClientAccountNumber;//reciever is now the sender
+                    payment_instuction.Amount = item.Amount;
+                    payment_instuction.Reference = item.Reference;
+                    db.MAccountCreditInstructions.Add(payment_instuction);
+                }
+                await db.SaveChangesAsync();
+                //
+                var total_amount = processed_debit_orders.Sum(i => i.Amount);
+                var debitee_bank_code = processed_debit_orders.First().ClientBankCode;
+                var debitor_bank_code = processed_debit_orders.First().SenderBankCode;
+                //debit the debitee suspense account
+                Globals.DebitSuspenseAccount(debitee_bank_code, total_amount);
+                //credit the debitor account
+                Globals.CreditSuspenseAccount(debitor_bank_code, total_amount);
+                return Json(new
+                {
+                    res = "ok",
+                    data = "Processed Debit Order Submitted"
+                });
+            }
+            catch (Exception ex)
+            {
+                var error = new MErrors() { Date = DateTime.Now, Data1 = ex.Message, Data2 = ex.StackTrace };
+                db.MErrors.Add(error);
+                db.SaveChanges();
+                return Json(new
+                {
+                    res = "err",
+                    msg = ex.Message
+                });
+            }
+        }
 
 
         /// <summary>
