@@ -152,8 +152,8 @@ namespace PayGuardRbzInterface.Controllers
         /// </summary>
         /// <param name="sender_account">the account of the sender</param>
         /// <returns></returns>
-        [HttpGet("ViewDebitOrdersErrors")]
-        public async Task<JsonResult> ViewDebitOrdersErrors(string bank_swift_code, string sender_account)
+        [HttpGet("ViewDebitOrderErrors")]
+        public async Task<JsonResult> ViewDebitOrderErrors(string bank_swift_code, string sender_account)
         {
             try
             {
@@ -175,7 +175,7 @@ namespace PayGuardRbzInterface.Controllers
 
                 http_client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
                 var request_errors = await http_client
-                    .GetAsync($"{bank.EndPoint}/PayGuard/v1/ViewBulkPaymentErrors?sender_account={sender_account}")
+                    .GetAsync($"{bank.EndPoint}/PayGuard/v1/ViewDebitOrderErrors?sender_account={sender_account}")
                     .Result
                     .Content
                     .ReadAsStringAsync()

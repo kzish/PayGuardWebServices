@@ -1,5 +1,5 @@
 ﻿@{
-    var errors = (List<PayGuard.Models.MAccountCreditInstructionsFailed>)ViewBag.errors;
+    var errors = (List<PayGuard.Models.MAccountDebitInstructionsFailed>)ViewBag.errors;
 }
 <style>
     @*style the drop down select entries - datatables*@
@@ -20,8 +20,8 @@
     <thead>
         <tr>
             <th>Date</th>
-            <th>RecipientBankCode</th>
-            <th>RecipientAccountNumber</th>
+            <th>ClientBankCode</th>
+            <th>ClientAccountNumber</th>
             <th>SenderBankCode</th>
             <th>SenderAccountNumber</th>
             <th>Amount</th>
@@ -33,8 +33,8 @@
         {
         <tr>
             <td title="@item.Date.ToString("d-MMM-yyyy")">@item.Date.ToString("d-MMM-yyyy")</td>
-            <td title="@item.RecipientBankCode">@item.RecipientBankCode</td>
-            <td title="@item.RecipientAccountNumber">@item.RecipientAccountNumber</td>
+            <td title="@item.ClientBankCode">@item.ClientBankCode</td>
+            <td title="@item.ClientAccountNumber">@item.ClientAccountNumber</td>
             <td title="@item.SenderBankCode">@item.SenderBankCode</td>
             <td title="@item.SenderAccountNumber">@item.SenderAccountNumber</td>
             <td title="@item.Amount">@item.Amount</td>

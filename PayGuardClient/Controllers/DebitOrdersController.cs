@@ -502,15 +502,15 @@ namespace PayGuardClient.Controllers
                     .ReadAsStringAsync();
                 //
                 dynamic request_errors_json = JsonConvert.DeserializeObject(request_errors);
-                var errors = new List<PayGuard.Models.MAccountCreditInstructionsFailed>();
+                var errors = new List<PayGuard.Models.MAccountDebitInstructionsFailed>();
                 if (request_errors_json.res == "ok")
                 {
                     foreach (var item in request_errors_json.data)
                     {
-                        var error = new PayGuard.Models.MAccountCreditInstructionsFailed();
+                        var error = new PayGuard.Models.MAccountDebitInstructionsFailed();
                         error.Date = item.date;
-                        error.RecipientBankCode = item.recipientBankCode;
-                        error.RecipientAccountNumber = item.recipientAccountNumber;
+                        error.ClientBankCode = item.ClientBankCode;
+                        error.ClientAccountNumber = item.ClientAccountNumber;
                         error.SenderBankCode = item.senderBankCode;
                         error.SenderAccountNumber = item.senderAccountNumber;
                         error.Amount = item.amount;

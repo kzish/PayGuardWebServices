@@ -13,7 +13,7 @@
 
 <script>
     $.ajax({
-        url: "@(Url.Content("~/BulkPayments/ajaxViewErrors/"))@ViewBag.bank_swift_code",
+        url: "@(Url.Content("~/DebitOrders/ajaxViewErrors/"))@ViewBag.bank_swift_code",
         method: "get",
         success: function (data) {
             $("#data").html(data);
