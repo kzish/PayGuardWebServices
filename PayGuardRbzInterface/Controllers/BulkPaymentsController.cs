@@ -44,8 +44,8 @@ namespace PayGuardRbzInterface.Controllers
         /// <summary>
         /// gamuchira bulk payment from the client bank 
         /// create payment instructions and store into db
-        /// debits the senders suspense account for the total amount in the bulkpayment
-        /// credits the recipient suspense account for the corresponding total amount in the bulkpayment
+        /// debits the senders suspense "bank's" account for the total amount in the bulkpayment
+        /// credits the recipient suspense "bank's" account for the corresponding total amount in the bulkpayment
         /// </summary>
         /// <param name="bulk_payment"></param>
         /// <returns></returns>
@@ -79,9 +79,9 @@ namespace PayGuardRbzInterface.Controllers
                 {
                     var total_amount_to_credit_for_this_bank = bulk_payment
                         .MBulkPaymentsIncomingRecipients
-                        .Where(i => i.RecipientBankSwiftCode == bank.SwiftCode)
+                        .Where(i => i.RecipientBankSwiftCode == bank.SwiftCode)//for this bank
                         .Sum(i => i.RecipientAmount);
-                    //
+                    //credit the banks suspense account
                     Globals.CreditSuspenseAccount(bank.SwiftCode, total_amount_to_credit_for_this_bank);
                 }
                 //
@@ -112,6 +112,7 @@ namespace PayGuardRbzInterface.Controllers
         /// route the request to the specified bank
         /// </summary>
         /// <param name="sender_account">the account of the sender</param>
+        /// <param name="bank_swift_code">the bank code where we are fetching errors from</param>
         /// <returns></returns>
         [HttpGet("ViewBulkPaymentErrors")]
         public async Task<JsonResult> ViewBulkPaymentErrors(string bank_swift_code, string sender_account)

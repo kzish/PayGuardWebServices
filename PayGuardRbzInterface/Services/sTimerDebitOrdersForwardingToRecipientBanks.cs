@@ -19,7 +19,6 @@ namespace PayGuardRbzInterface.Services
 
     /// <summary>
     /// sends the debit orders to each recipient bank
-    /// credits the senders suspense account 
     /// </summary>
     public class sTimerDebitOrdersForwardingToRecipientBanks : ITimerDebitOrdersForwardingToRecipientBanks
     {
@@ -37,8 +36,7 @@ namespace PayGuardRbzInterface.Services
         /// group payment instructions by bank code
         /// forward messages to bank endpoint
         /// grouping messages reduces number of requests
-        /// debits the debitee bank suspense account
-        /// credits the debitor bank suspense account
+        /// does not credit/debit suspense accounts
         /// </summary>
         /// <param name="state"></param>
         public void RunTask(object state)
@@ -105,10 +103,6 @@ namespace PayGuardRbzInterface.Services
                                 processed.Reference = item.Reference;
                                 db.MAccountDebitInstructionsProcessed.Add(processed);//add to processed
                                 db.MAccountDebitInstructions.Remove(item);//remove from inbox
-                                //debit the suspense account of the debitee bank
-                                Globals.DebitSuspenseAccount(processed.ClientBankCode, processed.Amount);
-                                //credit the suspense account of the debitor bank
-                                Globals.CreditSuspenseAccount(processed.SenderBankCode, processed.Amount);
                             }
                             db.SaveChanges();//save
                         }

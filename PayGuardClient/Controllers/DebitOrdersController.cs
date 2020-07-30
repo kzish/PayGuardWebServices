@@ -51,8 +51,9 @@ namespace PayGuardClient.Controllers
                 .Where(i => i.Email == User.Identity.Name)
                 .Include(i => i.MUsers)
                 .FirstOrDefault();
-
+            //
             ViewBag.title = "All DebitOrders";
+            //
             var debit_orders = db.MDebitOrders
                 .Where(i => i.CompanyId == user.MUsers.CompanyId)//for this company
                 .Include(i => i.MDebitOrdersClients)//include clients
@@ -218,15 +219,29 @@ namespace PayGuardClient.Controllers
         {
             try
             {
+                var user = db.AspNetUsers
+                    .Where(i => i.Email == User.Identity.Name)
+                    .Include(i => i.MUsers)
+                    .FirstOrDefault();
+                //
                 ViewBag.title = "Edit DebitOrder";
-                var debit_order = db.MDebitOrders.Find(id);
+                //
+                var debit_order = db.MDebitOrders
+                    .Where(i=>i.CompanyId==user.MUsers.CompanyId && i.Id==id)//this company
+                    .FirstOrDefault();
+                //
+                if(debit_order==null)
+                {
+                    TempData["msg"] = "Debit order does not exist";
+                    TempData["type"] = "error";
+                    return RedirectToAction("AllDebitOrders");
+                }
                 ViewBag.debit_order = debit_order;
             }
             catch (Exception ex)
             {
                 TempData["msg"] = ex.Message;
                 TempData["type"] = "error";
-                ViewBag.debit_order = new MDebitOrders();
                 return RedirectToAction("AllDebitOrders");
             }
             return View();

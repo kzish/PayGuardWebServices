@@ -214,15 +214,29 @@ namespace PayGuardClient.Controllers
         {
             try
             {
+                var user = db.AspNetUsers
+                    .Where(i => i.Email == User.Identity.Name)
+                    .Include(i=>i.MUsers)
+                    .FirstOrDefault();
+                //
                 ViewBag.title = "Edit BulkPayment";
-                var bulk_payment = db.MBulkPayments.Find(id);
+                //
+                var bulk_payment = db.MBulkPayments
+                    .Where(i => i.CompanyId == user.MUsers.CompanyId && i.Id == id)//this company
+                    .FirstOrDefault();
+                //
+                if(bulk_payment==null)
+                {
+                    TempData["msg"] = "Bulk Payment does not exist";
+                    TempData["type"] = "error";
+                    return RedirectToAction("AllBulkPayments");
+                }
                 ViewBag.bulk_payment = bulk_payment;
             }
             catch (Exception ex)
             {
                 TempData["msg"] = ex.Message;
                 TempData["type"] = "error";
-                ViewBag.bulk_payment = new MBulkPayments();
                 return RedirectToAction("AllBulkPayments");
             }
             return View();

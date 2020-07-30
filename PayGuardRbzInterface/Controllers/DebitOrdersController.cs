@@ -46,7 +46,7 @@ namespace PayGuardRbzInterface.Controllers
         /// create debit order instructions and store into db
         /// does not credit
         /// does not debit
-        /// credit and debit is handles by the service that sends debit orders to the client/debitee bank
+        /// credit and debit is handled by the service that sends debit orders to the client/debitee bank
         /// </summary>
         /// <param name="debit_order"></param>
         /// <returns></returns>
@@ -91,10 +91,13 @@ namespace PayGuardRbzInterface.Controllers
 
         /// <summary>
         /// recieves processed debit orders from the debitee bank
-        /// debits the debitee bank suspence account
-        /// credits the debitors suspense account
+        /// debits the debitee "bank" suspence account
+        /// credits the debitors "bank" suspense account
         /// recieved debits are converted into payment instructions 
         /// a service will process the payment instructions
+        /// processed_debit_orders are debit orders that have successfuly debited the "debitee/client" account at his/her bank
+        /// and are sent back to rbz to debit/credit the suspense accounts respectively
+        /// debit/credit the suspense accounts respectively
         /// </summary>
         /// <param name="debit_orders"></param>
         /// <returns></returns>
@@ -103,7 +106,8 @@ namespace PayGuardRbzInterface.Controllers
         {
             try
             {
-                //create debit instructions for each bankcode and store into db
+                //create payment instructions for each bankcode and store into db
+                //convert processed debit orders into payment instructions
                 foreach (var item in processed_debit_orders)
                 {
                     var payment_instuction = new MAccountCreditInstructions();
@@ -117,13 +121,14 @@ namespace PayGuardRbzInterface.Controllers
                     db.MAccountCreditInstructions.Add(payment_instuction);
                 }
                 await db.SaveChangesAsync();
-                //
+                //since all payments are coming from the same bank(one bank) and are going to the same bank(one bank)...
+                //...group total_amount,  debitee_bank_code, debitor_bank_code
                 var total_amount = processed_debit_orders.Sum(i => i.Amount);
-                var debitee_bank_code = processed_debit_orders.First().ClientBankCode;
-                var debitor_bank_code = processed_debit_orders.First().SenderBankCode;
-                //debit the debitee suspense account
+                var debitee_bank_code = processed_debit_orders.First().ClientBankCode;//the original client/recipient of the debit order is not the sender
+                var debitor_bank_code = processed_debit_orders.First().SenderBankCode;//the original sender is now the benificiary
+                //debit the debitee suspense "bank" account
                 Globals.DebitSuspenseAccount(debitee_bank_code, total_amount);
-                //credit the debitor account
+                //credit the debitor suspense "bank" account
                 Globals.CreditSuspenseAccount(debitor_bank_code, total_amount);
                 return Json(new
                 {
@@ -151,6 +156,7 @@ namespace PayGuardRbzInterface.Controllers
         /// route the request to the specified bank
         /// </summary>
         /// <param name="sender_account">the account of the sender</param>
+        /// <param name="bank_swift_code">the bank code where we are routing this request</param>
         /// <returns></returns>
         [HttpGet("ViewDebitOrderErrors")]
         public async Task<JsonResult> ViewDebitOrderErrors(string bank_swift_code, string sender_account)

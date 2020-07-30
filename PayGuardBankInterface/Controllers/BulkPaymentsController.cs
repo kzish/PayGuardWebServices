@@ -63,6 +63,8 @@ namespace PayGuardBankInterface.Controllers
 
         /// <summary>
         /// gamuchira bulk payment from the client portal 
+        /// check for sufficient balance
+        /// returns error message for insufficient balance
         /// save bulk payment into the db
         /// accepts MBulkPayments type and converts into MBulkPaymentsIncoming
         /// debits the bank account
@@ -119,7 +121,7 @@ namespace PayGuardBankInterface.Controllers
                 }
                 //
                 await db.SaveChangesAsync();
-                //debit the clients bank account
+                //debit the "clients" bank account
                 Globals.DebitAccount(bulk_payment.AccountNumber, total_amount_to_debit);
                 //
                 return Json(new

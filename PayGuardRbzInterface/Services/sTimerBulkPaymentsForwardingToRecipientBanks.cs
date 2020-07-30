@@ -36,6 +36,7 @@ namespace PayGuardRbzInterface.Services
         /// group payment instructions by bank code
         /// forward messages to bank endpoint
         /// grouping messages reduces number of requests
+        /// does not credit/debit suspense accounts
         /// </summary>
         /// <param name="state"></param>
         public void RunTask(object state)
@@ -55,7 +56,7 @@ namespace PayGuardRbzInterface.Services
                     {
                         //grab 1k records for this bank
                         var payments = db.MAccountCreditInstructions
-                            .Where(i => i.RecipientBankCode == bank.SwiftCode)
+                            .Where(i => i.RecipientBankCode == bank.SwiftCode)//this bank
                             .Take(1000)//send only 1k at a time
                             .ToList();
 
@@ -64,12 +65,8 @@ namespace PayGuardRbzInterface.Services
 
                         //get access token
                         var http_client = new HttpClient();
-                        var request_token = http_client.GetAsync($"{bank.EndPoint}/PayGuard/v1/RequestToken?clientID={Globals.client_id}&clientSecret={Globals.client_secret}")
-                            .Result
-                            .Content
-                            .ReadAsStringAsync()
-                            .Result;
-                        if (string.IsNullOrEmpty(request_token))
+                        var access_token = Globals.GetAccessToken(bank.EndPoint);
+                        if (string.IsNullOrEmpty(access_token))
                         {
                             var error = new MErrors() { Date = DateTime.Now, Data1 = source + ".RunTask", Data2 = "failed to fetch access token" };
                             db.MErrors.Add(error);
@@ -77,9 +74,6 @@ namespace PayGuardRbzInterface.Services
                             db.Dispose();
                             return;//finally block is executed 
                         }
-                        //
-                        dynamic token = JsonConvert.DeserializeObject(request_token);
-                        string access_token = token.access_token;
                         //add token
                         http_client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
                         //serialize and send payments to recipient bank end point       

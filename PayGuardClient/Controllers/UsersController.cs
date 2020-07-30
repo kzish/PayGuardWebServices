@@ -61,10 +61,11 @@ namespace PayGuardClient.Controllers
                    .Where(i => i.Email == User.Identity.Name)
                    .Include(i => i.MUsers)
                    .FirstOrDefault();
-
+            //
             var users = db.MUsers
-                .Where(i => i.CompanyId == current_user.MUsers.CompanyId)
+                .Where(i => i.CompanyId == current_user.MUsers.CompanyId)//this company
                 .ToList();
+            //
             ViewBag.users = users;
             return View();
         }
@@ -130,6 +131,7 @@ namespace PayGuardClient.Controllers
             try
             {
                 ViewBag.title = "Edit User";
+                //
                 var user = db.AspNetUsers
                     .Include(i => i.MUsers)
                     .Where(i => i.Id == asp_net_user_id)

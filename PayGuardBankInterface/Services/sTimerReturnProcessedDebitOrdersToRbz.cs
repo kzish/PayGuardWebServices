@@ -53,7 +53,7 @@ namespace PayGuardBankInterface.Services
                 using (var db = new dbContext())
                 {
                     var processed_debit_orders = db.MAccountDebitInstructionsProcessed
-                        .Take(1000)
+                        .Take(1000)//move 1k at a time
                         .ToList();
                     //
                     var access_token = Globals.GetAccessToken(Globals.rbz_end_point);

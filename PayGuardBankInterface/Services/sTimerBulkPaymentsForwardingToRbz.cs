@@ -57,12 +57,8 @@ namespace PayGuardBankInterface.Services
                     if (bulk_payment == null) return;
                     //get access token
                     var http_client = new HttpClient();
-                    var request_token = http_client.GetAsync($"{Globals.rbz_end_point}/PayGuard/v1/RequestToken?clientID={Globals.client_id}&clientSecret={Globals.client_secret}")
-                        .Result
-                        .Content
-                        .ReadAsStringAsync()
-                        .Result;
-                    if (string.IsNullOrEmpty(request_token))
+                    var access_token = Globals.GetAccessToken(Globals.rbz_end_point);
+                    if (string.IsNullOrEmpty(access_token))
                     {
                         var error = new MErrors() { Date = DateTime.Now, Data1 = source + ".RunTask", Data2 = "failed to fetch access token" };
                         db.MErrors.Add(error);
@@ -70,9 +66,6 @@ namespace PayGuardBankInterface.Services
                         db.Dispose();
                         return;//finally block is executed 
                     }
-                    //
-                    dynamic token = JsonConvert.DeserializeObject(request_token);
-                    string access_token = token.access_token;
                     //add token
                     http_client.DefaultRequestHeaders.Add("Authorization", $"Bearer {access_token}");
                     //upload bulkpayment to rbz        
@@ -123,7 +116,7 @@ namespace PayGuardBankInterface.Services
                     }
                     else
                     {
-                        //if failed the bulkpayment says inside the inbox, the service will try again 
+                        //if failed the bulkpayment stays inside the inbox, the service will try again 
                         var error = new MErrors() { Date = DateTime.Now, Data1 = source + ".RunTask   failed to upload bulk payment to rbz", Data2 = (string)response.msg };
                         db.MErrors.Add(error);
                         db.SaveChanges();

@@ -35,8 +35,9 @@ namespace PayGuardBankInterface.Services
 
         /// <summary>
         /// task will process the debit order instruction
-        /// debits the cleint/debitee account
+        /// debits the client/debitee account
         /// stores the payment instruction into the processed table
+        /// they will be sent back to rbz by another service
         /// </summary>
         /// <param name="state"></param>
         public void RunTask(object state)
