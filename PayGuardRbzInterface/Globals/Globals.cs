@@ -69,7 +69,7 @@ public class Globals
     }
 
 
-
+    //clearing account
     /// <summary>
     /// debit the banks suspense account
     /// </summary>
